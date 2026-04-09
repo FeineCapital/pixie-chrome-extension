@@ -96,18 +96,29 @@ chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
   if (!tab || !tab.id) return;
   chrome.runtime.sendMessage({ type: 'GET_STATE', tabId: tab.id }, (res) => {
     if (chrome.runtime.lastError) return;
-    if (res && res.active) {
-      setActive(true);
-    }
+    if (res && res.active) setActive(true);
   });
 });
 
-// Listen for deactivation from content script (via background)
+// Listen for messages from background
 chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.type === 'MODE_DEACTIVATED') {
-    setActive(false);
+  if (msg.type === 'MODE_DEACTIVATED') setActive(false);
+});
+
+// Load and display the keyboard shortcut
+chrome.commands.getAll((commands) => {
+  const cmd = commands.find(c => c.name === 'activate-capture');
+  const keysContainer = document.getElementById('shortcutKeys');
+  if (cmd && cmd.shortcut) {
+    // Parse shortcut into individual key badges (e.g. "Ctrl+Shift+E" → ["Ctrl","Shift","E"])
+    const parts = cmd.shortcut.split('+');
+    keysContainer.innerHTML = parts.map(k => `<span class="key">${k}</span>`).join('<span style="color:rgba(255,255,255,0.2);font-size:9px;margin:0 1px;">+</span>');
+  } else {
+    keysContainer.innerHTML = '<span class="key" style="opacity:0.4">Not set</span>';
   }
-  if (msg.type === 'CAPTURE_SUCCESS') {
-    showFeedback('Captured! Downloading…');
-  }
+});
+
+// Open Chrome's shortcut settings page
+document.getElementById('shortcutEdit').addEventListener('click', () => {
+  chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
 });

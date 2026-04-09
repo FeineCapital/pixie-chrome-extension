@@ -277,8 +277,57 @@
       opacity: 1;
     }
 
+    .shortcut-row {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+
+    .shortcut-label {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .shortcut-keys {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .key {
+      display: inline-block;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'SFMono-Regular', 'Consolas', 'Menlo', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.4;
+    }
+
+    .shortcut-edit {
+      font-size: 9.5px;
+      color: var(--green-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+      opacity: 0.7;
+      transition: opacity 0.15s;
+    }
+    .shortcut-edit:hover { opacity: 1; }
+
     .footer {
-      margin-top: 16px;
+      margin-top: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -289,16 +338,15 @@
       width: 3px; height: 3px;
       border-radius: 50%;
       background: var(--text-muted);
-      opacity: 0.4;
+      opacity: 0.3;
     }
 
     .footer-text {
       font-size: 9.5px;
       color: var(--text-muted);
-      opacity: 0.4;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 500;
+      opacity: 0.3;
+      letter-spacing: 0.06em;
+      font-weight: 400;
     }
   </style>
 </head>
@@ -342,13 +390,23 @@
         </div>
       </button>
 
-      <p class="hint" id="hint">Hover over any element, then click to capture it as PNG</p>
+      <p class="hint" id="hint">Hover an element and click — copies it to your clipboard</p>
 
       <div class="feedback" id="feedback"></div>
 
+      <div class="shortcut-row">
+        <span class="shortcut-label">Keyboard shortcut</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="shortcut-keys" id="shortcutKeys">
+            <span class="key" id="shortcutDisplay">—</span>
+          </div>
+          <button class="shortcut-edit" id="shortcutEdit" title="Customize shortcut">Edit ↗</button>
+        </div>
+      </div>
+
       <div class="footer">
         <div class="footer-dot"></div>
-        <span class="footer-text">Press <span>Esc</span> to cancel</span>
+        <span class="footer-text">Press Esc to cancel</span>
         <div class="footer-dot"></div>
       </div>
     </div>
