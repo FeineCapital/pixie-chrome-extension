@@ -17,7 +17,7 @@ export function Hero() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-[2.5rem] leading-[1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold md:leading-[1] mb-6 md:mb-8 text-foreground"
+          className="text-[2.2rem] sm:text-5xl md:text-6xl font-display font-bold leading-[1] mb-6 md:mb-8 text-foreground whitespace-nowrap"
         >
           AI Powered Screen Capturing
         </motion.h1>
@@ -26,9 +26,10 @@ export function Hero() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-2xl text-balance mb-8 md:mb-12 leading-relaxed"
+          className="text-lg md:text-xl text-muted-foreground mb-8 md:mb-12 leading-relaxed"
         >
-          Pixie makes screen capturing effortless. Hover over any element on your screen, click once, and capture it perfectly — without dragging or cropping.
+          Pixie makes screen capturing effortless. Hover over any element, click once,<br />
+          and capture it perfectly without dragging or cropping.
         </motion.p>
 
         <motion.div
