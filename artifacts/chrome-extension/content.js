@@ -57,10 +57,28 @@
       #__ec-tip {
         position: fixed !important; z-index: 2147483645 !important;
         pointer-events: none !important;
-        background: rgba(0,0,0,0.72) !important; color: #fff !important;
-        font: 400 11.5px -apple-system, BlinkMacSystemFont, sans-serif !important;
-        padding: 4px 9px !important; border-radius: 5px !important;
-        white-space: nowrap !important; line-height: 1.4 !important;
+        background: rgba(18,18,22,0.82) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        color: #fff !important;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        font-style: normal !important;
+        font-variant: normal !important;
+        font-stretch: normal !important;
+        line-height: 1.4 !important;
+        letter-spacing: -0.01em !important;
+        word-spacing: normal !important;
+        text-transform: none !important;
+        text-decoration: none !important;
+        text-shadow: none !important;
+        -webkit-font-smoothing: antialiased !important;
+        padding: 8px 16px !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+        white-space: nowrap !important;
       }
       #__ec-sel {
         position: fixed !important; z-index: 2147483641 !important;
@@ -144,7 +162,7 @@
     if (tooltip) return;
     tooltip = document.createElement('div');
     tooltip.id = '__ec-tip';
-    tooltip.textContent = 'Click to select  ·  Drag to draw area';
+    tooltip.textContent = 'Click to select · Drag to draw area';
     document.documentElement.appendChild(tooltip);
   }
 
