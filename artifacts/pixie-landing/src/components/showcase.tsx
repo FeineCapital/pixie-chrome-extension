@@ -211,8 +211,8 @@ function CaptureDemo() {
             }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="#333" strokeWidth="1">
-              <path d="M5 3l14 9-7 1-4 7L5 3z" />
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M4 2L4 17L7.5 13.5L10 19L12 18L9.5 12.5L14 12.5L4 2Z" fill="white" stroke="#444" strokeWidth="1" strokeLinejoin="round"/>
             </svg>
           </motion.div>
 
