@@ -32,7 +32,7 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           style={{
             fontFamily: "Arial, sans-serif",
-            fontSize: "62px",
+            fontSize: "44px",
             fontWeight: 700,
             color: "#ffffff",
             lineHeight: 1,
