@@ -57,12 +57,12 @@ function IconFeather({ className }: { className?: string }) {
 }
 
 const features = [
-  { icon: IconBolt, title: "Instant Capture", description: "Hover over any element and click to capture. No drag, no crop, no setup.", color: "text-amber-400", bg: "bg-amber-400/10" },
-  { icon: IconPen, title: "Annotation Tools", description: "Draw, highlight, and mark up captures with a built-in pencil and eraser.", color: "text-blue-400", bg: "bg-blue-400/10" },
-  { icon: IconClipboard, title: "Clipboard Ready", description: "Every capture is copied automatically. Paste into Figma, Slack, or anywhere.", color: "text-violet-400", bg: "bg-violet-400/10" },
-  { icon: IconMonitor, title: "Retina Quality", description: "Crisp, high-resolution output. Built for displays that demand pixel perfection.", color: "text-rose-400", bg: "bg-rose-400/10" },
-  { icon: IconShield, title: "Fully Private", description: "Nothing leaves your Mac. No cloud, no account, no tracking whatsoever.", color: "text-cyan-400", bg: "bg-cyan-400/10" },
-  { icon: IconFeather, title: "Lightweight", description: "Lives in your menu bar. Uses minimal memory and never slows your machine down.", color: "text-orange-400", bg: "bg-orange-400/10" },
+  { icon: IconBolt, title: "Instant Capture", description: "Hover over any element and click to capture. No drag, no crop, no setup." },
+  { icon: IconPen, title: "Annotation Tools", description: "Draw, highlight, and mark up captures with a built-in pencil and eraser." },
+  { icon: IconClipboard, title: "Clipboard Ready", description: "Every capture is copied automatically. Paste into Figma, Slack, or anywhere." },
+  { icon: IconMonitor, title: "Retina Quality", description: "Crisp, high-resolution output. Built for displays that demand pixel perfection." },
+  { icon: IconShield, title: "Fully Private", description: "Nothing leaves your Mac. No cloud, no account, no tracking whatsoever." },
+  { icon: IconFeather, title: "Lightweight", description: "Lives in your menu bar. Uses minimal memory and never slows your machine down." },
 ];
 
 const shortcuts = [
@@ -121,8 +121,8 @@ export function Features() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
             >
-              <div className={`w-10 h-10 rounded-xl ${f.bg} flex items-center justify-center`}>
-                <Icon className={`w-5 h-5 ${f.color}`} />
+              <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Icon className="w-5 h-5 text-white" />
               </div>
               <h3 style={{ fontFamily: "Arial, sans-serif", fontSize: "17px", fontWeight: 700, color: "#ffffff" }}>{f.title}</h3>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", fontWeight: 400, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{f.description}</p>
