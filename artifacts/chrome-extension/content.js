@@ -703,10 +703,10 @@
   ══════════════════════════════════ */
   function onMouseDown(e) {
     if (!window.__elementCaptureActive || e.button !== 0) return;
-    if (isOurs(e.target)) return;
+    // Allow clicks on the shield (our click surface) — block clicks on toolbar/handles/etc.
+    if (isOurs(e.target) && e.target !== shield) return;
 
     if (state === S.HOVER) {
-      // Click mode: detect click vs drag
       potentialDrag = true;
       dragStart = { x: e.clientX, y: e.clientY };
       e.preventDefault();
