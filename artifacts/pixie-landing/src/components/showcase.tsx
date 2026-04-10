@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
-function FakeWebsite({ step }: { step: number }) {
+function StripeDashboard({ step }: { step: number }) {
   const isHovered = step >= 1;
   const isCaptured = step >= 2;
 
@@ -11,80 +11,76 @@ function FakeWebsite({ step }: { step: number }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "14px 28px",
-        borderBottom: "1px solid #eee",
+        padding: "12px 24px",
+        borderBottom: "1px solid #e5e7eb",
         background: "#fff",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#635bff"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/></svg>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", fontWeight: 700, color: "#111" }}>Dashboard</span>
           </div>
-          <span style={{ fontFamily: "Arial, sans-serif", fontSize: "15px", fontWeight: 700, color: "#111" }}>Acme Store</span>
+          <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+            {["Home", "Payments", "Balances", "Customers"].map(t => (
+              <span key={t} style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", color: t === "Home" ? "#635bff" : "#6b7280", fontWeight: t === "Home" ? 600 : 400 }}>{t}</span>
+            ))}
+          </div>
         </div>
-        <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
-          {["Products", "Collections", "About"].map(t => (
-            <span key={t} style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", color: "#666", fontWeight: 500 }}>{t}</span>
-          ))}
-          <div style={{ background: "#111", borderRadius: "8px", padding: "6px 16px" }}>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", color: "#fff", fontWeight: 600 }}>Sign in</span>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <div style={{ width: "160px", height: "28px", borderRadius: "6px", background: "#f3f4f6", display: "flex", alignItems: "center", padding: "0 10px", gap: "6px" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#9ca3af" }}>Search...</span>
+          </div>
+          <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "#635bff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", fontWeight: 700, color: "#fff" }}>A</span>
           </div>
         </div>
       </div>
 
-      <div style={{ padding: "28px 28px 0" }}>
-        <div style={{ borderRadius: "14px", overflow: "hidden", marginBottom: "24px", position: "relative", height: "160px", background: "linear-gradient(135deg, #0f172a, #1e293b)" }}>
-          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 40px" }}>
-            <div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", fontWeight: 600, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px" }}>Summer Collection</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "24px", fontWeight: 700, color: "#fff", marginBottom: "6px", lineHeight: 1.2 }}>New Arrivals</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", color: "rgba(255,255,255,0.6)", marginBottom: "14px" }}>Up to 40% off select items</div>
-              <div style={{ background: "#fff", borderRadius: "8px", padding: "8px 20px", display: "inline-block" }}>
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", fontWeight: 700, color: "#111" }}>Shop now</span>
-              </div>
+      <div style={{ padding: "24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+          <div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#6b7280", fontWeight: 500, marginBottom: "4px" }}>Monthly Recurring Revenue</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+              <span style={{ fontFamily: "Arial, sans-serif", fontSize: "32px", fontWeight: 700, color: "#111", letterSpacing: "-0.02em" }}>$48,295</span>
+              <span style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", fontWeight: 600, color: "#059669", background: "#ecfdf5", borderRadius: "4px", padding: "2px 6px" }}>+12.5%</span>
             </div>
-            <div style={{ display: "flex", gap: "12px" }}>
-              <div style={{ width: "100px", height: "120px", borderRadius: "10px", background: "linear-gradient(145deg, #dbeafe, #93c5fd)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v3"/></svg>
+          </div>
+          <div style={{ display: "flex", gap: "6px" }}>
+            {["1M", "3M", "6M", "1Y"].map(t => (
+              <div key={t} style={{ padding: "4px 10px", borderRadius: "6px", background: t === "1Y" ? "#f3f4f6" : "transparent" }}>
+                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", fontWeight: 500, color: t === "1Y" ? "#111" : "#9ca3af" }}>{t}</span>
               </div>
-              <div style={{ width: "100px", height: "120px", borderRadius: "10px", background: "linear-gradient(145deg, #fef3c7, #fde68a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        <div style={{ marginBottom: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "18px", fontWeight: 700, color: "#111" }}>Featured Products</div>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", color: "#6366f1", fontWeight: 600 }}>View all</span>
+        <div style={{ height: "130px", marginBottom: "24px", position: "relative" }}>
+          <svg width="100%" height="100%" viewBox="0 0 600 130" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="mrrGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#635bff" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#635bff" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d="M0,100 C50,95 80,85 120,80 C160,75 200,90 240,70 C280,50 320,65 360,45 C400,30 440,40 480,25 C520,15 560,20 600,10 L600,130 L0,130 Z" fill="url(#mrrGrad)" />
+            <path d="M0,100 C50,95 80,85 120,80 C160,75 200,90 240,70 C280,50 320,65 360,45 C400,30 440,40 480,25 C520,15 560,20 600,10" fill="none" stroke="#635bff" strokeWidth="2" />
+            <circle cx="600" cy="10" r="4" fill="#635bff" />
+          </svg>
+          <div style={{ position: "absolute", bottom: "0", left: "0", right: "0", display: "flex", justifyContent: "space-between" }}>
+            {["Jan", "Mar", "May", "Jul", "Sep", "Nov"].map(m => (
+              <span key={m} style={{ fontFamily: "Arial, sans-serif", fontSize: "9px", color: "#c4c4c4" }}>{m}</span>
+            ))}
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "16px" }}>
-          <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid #f0f0f0" }}>
-            <div style={{ height: "110px", position: "relative", overflow: "hidden" }}>
-              <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80" alt="Wireless Headphones" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              <div style={{ position: "absolute", top: "8px", right: "8px", background: "#ef4444", borderRadius: "6px", padding: "2px 8px" }}>
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "9px", fontWeight: 700, color: "#fff" }}>SALE</span>
-              </div>
-            </div>
-            <div style={{ padding: "12px" }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "4px" }}>Wireless Headphones</div>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", fontWeight: 700, color: "#111" }}>$79</span>
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#999", textDecoration: "line-through" }}>$129</span>
-              </div>
-              <div style={{ display: "flex", gap: "2px", marginTop: "6px" }}>
-                {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill={s<=4?"#f59e0b":"#e5e7eb"}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "9px", color: "#999", marginLeft: "4px" }}>(128)</span>
-              </div>
-            </div>
-          </div>
-
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "12px", marginBottom: "20px" }}>
           <motion.div
             style={{
-              borderRadius: "12px",
-              overflow: "hidden",
+              borderRadius: "10px",
+              padding: "14px",
+              background: "#fafafa",
+              border: "1px solid #f0f0f0",
               position: "relative",
               zIndex: 5,
             }}
@@ -93,89 +89,59 @@ function FakeWebsite({ step }: { step: number }) {
                 ? "0 0 0 2px #34D399"
                 : isHovered
                 ? "0 0 0 2px #34D399"
-                : "0 0 0 1px #f0f0f0",
+                : "none",
+              border: isCaptured
+                ? "1px solid transparent"
+                : isHovered
+                ? "1px solid transparent"
+                : "1px solid #f0f0f0",
             }}
             transition={{ duration: 0.3 }}
           >
-            <div style={{ height: "110px", position: "relative", overflow: "hidden" }}>
-              <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80" alt="Smart Watch Pro" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              <div style={{ position: "absolute", top: "8px", left: "8px", background: "#111", borderRadius: "6px", padding: "2px 8px" }}>
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "9px", fontWeight: 700, color: "#fff" }}>NEW</span>
-              </div>
-            </div>
-            <div style={{ padding: "12px", background: "#fff" }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "4px" }}>Smart Watch Pro</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", fontWeight: 700, color: "#111" }}>$199</div>
-              <div style={{ display: "flex", gap: "2px", marginTop: "6px" }}>
-                {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill={s<=5?"#f59e0b":"#e5e7eb"}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "9px", color: "#999", marginLeft: "4px" }}>(256)</span>
-              </div>
-            </div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#6b7280", marginBottom: "6px" }}>Active Subscribers</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "20px", fontWeight: 700, color: "#111" }}>1,247</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#059669", marginTop: "4px" }}>+8.2% vs last month</div>
           </motion.div>
-
-          <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid #f0f0f0" }}>
-            <div style={{ height: "110px", position: "relative", overflow: "hidden" }}>
-              <img src="https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=300&q=80" alt="Fitness Tracker" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
-            <div style={{ padding: "12px" }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "4px" }}>Fitness Tracker</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", fontWeight: 700, color: "#111" }}>$49</div>
-              <div style={{ display: "flex", gap: "2px", marginTop: "6px" }}>
-                {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill={s<=3?"#f59e0b":"#e5e7eb"}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "9px", color: "#999", marginLeft: "4px" }}>(89)</span>
-              </div>
-            </div>
+          <div style={{ borderRadius: "10px", padding: "14px", background: "#fafafa", border: "1px solid #f0f0f0" }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#6b7280", marginBottom: "6px" }}>Net Revenue</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "20px", fontWeight: 700, color: "#111" }}>$12.4k</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#059669", marginTop: "4px" }}>+5.1% vs last month</div>
           </div>
-
-          <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid #f0f0f0" }}>
-            <div style={{ height: "110px", position: "relative", overflow: "hidden" }}>
-              <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=300&q=80" alt="Aromatherapy Kit" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
-            <div style={{ padding: "12px" }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "4px" }}>Aromatherapy Kit</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "14px", fontWeight: 700, color: "#111" }}>$34</div>
-              <div style={{ display: "flex", gap: "2px", marginTop: "6px" }}>
-                {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill={s<=4?"#f59e0b":"#e5e7eb"}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "9px", color: "#999", marginLeft: "4px" }}>(67)</span>
-              </div>
-            </div>
+          <div style={{ borderRadius: "10px", padding: "14px", background: "#fafafa", border: "1px solid #f0f0f0" }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#6b7280", marginBottom: "6px" }}>Churn Rate</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "20px", fontWeight: 700, color: "#111" }}>2.4%</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#dc2626", marginTop: "4px" }}>+0.3% vs last month</div>
+          </div>
+          <div style={{ borderRadius: "10px", padding: "14px", background: "#fafafa", border: "1px solid #f0f0f0" }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#6b7280", marginBottom: "6px" }}>Avg Revenue / User</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "20px", fontWeight: 700, color: "#111" }}>$38.72</div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#059669", marginTop: "4px" }}>+2.8% vs last month</div>
           </div>
         </div>
 
-        <div style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px" }}>
-          <div style={{ borderRadius: "10px", padding: "16px", background: "#f9fafb", border: "1px solid #f3f4f6" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", fontWeight: 700, color: "#111" }}>Recent Orders</div>
-              <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#6366f1", fontWeight: 600 }}>View all</span>
-            </div>
-            {[
-              { id: "#38201", status: "Shipped", color: "#2563eb" },
-              { id: "#38200", status: "Delivered", color: "#059669" },
-              { id: "#38199", status: "Processing", color: "#f59e0b" },
-            ].map(o => (
-              <div key={o.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid #f3f4f6" }}>
-                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", color: "#444" }}>Order {o.id}</span>
+        <div style={{ borderRadius: "10px", padding: "14px", background: "#fafafa", border: "1px solid #f0f0f0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", fontWeight: 700, color: "#111" }}>Recent Transactions</div>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#635bff", fontWeight: 600 }}>View all</span>
+          </div>
+          {[
+            { name: "Alex Thompson", amount: "+$99.00", status: "Succeeded", color: "#059669" },
+            { name: "Sarah Chen", amount: "+$49.00", status: "Succeeded", color: "#059669" },
+            { name: "Mike Johnson", amount: "+$199.00", status: "Pending", color: "#f59e0b" },
+          ].map(o => (
+            <div key={o.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid #f3f4f6" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", fontWeight: 600, color: "#6b7280" }}>{o.name[0]}</span>
+                </div>
+                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", color: "#111", fontWeight: 500 }}>{o.name}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", fontWeight: 600, color: "#111" }}>{o.amount}</span>
                 <span style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", fontWeight: 600, color: o.color, background: `${o.color}15`, borderRadius: "4px", padding: "2px 8px" }}>{o.status}</span>
               </div>
-            ))}
-          </div>
-          <div style={{ borderRadius: "10px", padding: "16px", background: "#f9fafb", border: "1px solid #f3f4f6" }}>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: "13px", fontWeight: 700, color: "#111", marginBottom: "16px" }}>Store Stats</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: "22px", fontWeight: 700, color: "#111" }}>2,847</div>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#888" }}>Total Products</div>
-              </div>
-              <div>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: "22px", fontWeight: 700, color: "#111" }}>14.2k</div>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#888" }}>Monthly Sales</div>
-              </div>
-              <div style={{ height: "4px", background: "#e5e7eb", borderRadius: "2px", overflow: "hidden" }}>
-                <div style={{ width: "72%", height: "100%", background: "linear-gradient(90deg, #6366f1, #8b5cf6)", borderRadius: "2px" }} />
-              </div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "#999" }}>72% of monthly goal</div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -213,9 +179,7 @@ function CaptureDemo() {
 
   const isHovered = step >= 1;
   const isCaptured = step >= 2;
-  const showToolbar = step >= 3;
-  const isCopied = step >= 4;
-  const showNotif = step === 5;
+  const showNotif = step >= 4;
 
   return (
     <div className="relative w-full max-w-4xl mx-auto select-none">
@@ -229,20 +193,20 @@ function CaptureDemo() {
           <div className="flex-1 mx-6 flex items-center justify-center h-6 rounded-md" style={{ background: "rgba(255,255,255,0.06)" }}>
             <div className="flex items-center gap-1.5">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "rgba(255,255,255,0.35)" }}>acmestore.com/products</span>
+              <span style={{ fontFamily: "Arial, sans-serif", fontSize: "11px", color: "rgba(255,255,255,0.35)" }}>dashboard.stripe.com</span>
             </div>
           </div>
           <div style={{ width: "48px" }} />
         </div>
 
         <div className="relative" style={{ height: "600px", overflow: "hidden" }}>
-          <FakeWebsite step={step} />
+          <StripeDashboard step={step} />
 
           <motion.div
             className="absolute z-30 pointer-events-none"
             animate={{
-              left: isCaptured ? "38%" : isHovered ? "36%" : "20%",
-              top: isCaptured ? "50%" : isHovered ? "48%" : "15%",
+              left: isCaptured ? "15%" : isHovered ? "13%" : "50%",
+              top: isCaptured ? "72%" : isHovered ? "70%" : "30%",
               opacity: showNotif ? 0 : 1,
             }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -257,7 +221,7 @@ function CaptureDemo() {
               <motion.div
                 key={`ripple-${step}`}
                 className="absolute z-30 pointer-events-none rounded-full"
-                style={{ left: "calc(38% - 12px)", top: "calc(50% - 12px)", width: 24, height: 24, border: "2px solid rgba(52,211,153,0.8)" }}
+                style={{ left: "calc(15% - 12px)", top: "calc(72% - 12px)", width: 24, height: 24, border: "2px solid rgba(52,211,153,0.8)" }}
                 initial={{ scale: 0.5, opacity: 1 }}
                 animate={{ scale: 3, opacity: 0 }}
                 exit={{ opacity: 0 }}
@@ -266,103 +230,30 @@ function CaptureDemo() {
             )}
           </AnimatePresence>
 
-          <motion.div
-            className="absolute z-40 left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-2 px-4 py-2.5"
-            style={{
-              borderRadius: "12px",
-              background: "rgba(10,10,10,0.96)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              backdropFilter: "blur(14px)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-            }}
-            animate={{ opacity: showToolbar ? 1 : 0, y: showToolbar ? 0 : 12 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="p-1.5 rounded-md" style={{ color: "rgba(255,255,255,0.5)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-            </div>
-            <div className="p-1.5 rounded-md" style={{ color: "rgba(255,255,255,0.5)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/></svg>
-            </div>
-            <div className="w-px h-4" style={{ background: "rgba(255,255,255,0.09)" }} />
-            <motion.span
-              style={{
-                fontFamily: "Arial, sans-serif",
-                fontSize: "12px",
-                fontWeight: 700,
-                color: "#000",
-                background: "#ffffff",
-                borderRadius: "8px",
-                padding: "4px 12px",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
-              animate={{ scale: isCopied ? [1, 1.1, 1] : 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {isCopied && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-              {isCopied ? "Copied!" : "Copy"}
-            </motion.span>
-            <span
-              style={{
-                fontFamily: "Arial, sans-serif",
-                fontSize: "12px",
-                fontWeight: 600,
-                color: "#ffffff",
-                background: "transparent",
-                border: "1px solid rgba(255,255,255,0.15)",
-                borderRadius: "8px",
-                padding: "4px 12px",
-              }}
-            >
-              Save
-            </span>
-          </motion.div>
-
           <AnimatePresence>
             {showNotif && (
               <motion.div
-                initial={{ opacity: 0, y: -10, x: 10 }}
-                animate={{ opacity: 1, y: 0, x: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.25 }}
                 className="absolute z-50"
                 style={{
-                  top: "16px",
+                  bottom: "16px",
                   right: "16px",
                   display: "flex",
                   alignItems: "center",
-                  gap: "10px",
-                  padding: "10px 16px",
-                  borderRadius: "10px",
-                  background: "rgba(10,10,10,0.95)",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-                  backdropFilter: "blur(12px)",
+                  gap: "8px",
+                  padding: "8px 14px",
+                  borderRadius: "8px",
+                  background: "#0a0a0a",
+                  border: "1px solid rgba(255,255,255,0.1)",
                 }}
               >
-                <div style={{
-                  width: "28px",
-                  height: "28px",
-                  borderRadius: "6px",
-                  background: "rgba(255,255,255,0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", fontWeight: 700, color: "#fff" }}>Copied to clipboard</div>
-                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.45)" }}>Paste anywhere — ⌘V</div>
-                </div>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+                <span style={{ fontFamily: "Arial, sans-serif", fontSize: "12px", fontWeight: 600, color: "#34D399" }}>Copied to clipboard</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -376,8 +267,8 @@ function CaptureDemo() {
                 transition={{ duration: 0.2 }}
                 className="absolute z-30"
                 style={{
-                  left: "36%",
-                  top: "30%",
+                  left: "15%",
+                  top: "60%",
                   transform: "translateX(-50%)",
                   fontFamily: "Arial, sans-serif",
                   fontSize: "11px",
@@ -385,10 +276,8 @@ function CaptureDemo() {
                   color: "#ffffff",
                   padding: "5px 12px",
                   borderRadius: "8px",
-                  background: "rgba(10,10,10,0.9)",
-                  backdropFilter: "blur(12px)",
+                  background: "#0a0a0a",
                   border: "1px solid rgba(255,255,255,0.1)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
                   whiteSpace: "nowrap",
                 }}
               >
@@ -405,24 +294,25 @@ function CaptureDemo() {
 export function Showcase() {
   return (
     <section id="showcase" className="w-full px-6 md:px-8 py-24 md:py-36 flex flex-col items-center">
-      <motion.p
+      <motion.h2
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         style={{
           fontFamily: "Arial, sans-serif",
-          fontSize: "17px",
+          fontSize: "42px",
           fontWeight: 700,
           color: "#ffffff",
           textAlign: "center",
-          marginBottom: "56px",
-          lineHeight: 1.6,
+          marginBottom: "24px",
+          lineHeight: 1.1,
+          letterSpacing: "-0.02em",
           whiteSpace: "nowrap",
         }}
       >
-        No dragging, no cropping. Just hover over anything and click.
-      </motion.p>
+        No dragging or dropping. Just hover and click.
+      </motion.h2>
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
