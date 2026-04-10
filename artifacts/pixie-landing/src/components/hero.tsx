@@ -9,6 +9,17 @@ function AppleIcon({ className }: { className?: string }) {
   );
 }
 
+function ChromeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M12 7.5c2.48 0 4.5 2.02 4.5 4.5h4.5c0-4.97-4.03-9-9-9v4.5z" opacity="0.9"/>
+      <path d="M7.5 12c0-1.52.76-2.87 1.92-3.68L5.18 3.84A8.96 8.96 0 0 0 3 12h4.5z" opacity="0.7"/>
+      <path d="M12 16.5c-1.52 0-2.87-.76-3.68-1.92l-4.48 4.24A8.96 8.96 0 0 0 12 21v-4.5z" opacity="0.8"/>
+    </svg>
+  );
+}
+
 export function Hero() {
   return (
     <section className="w-full min-h-screen flex flex-col items-center justify-center px-6 md:px-8 pt-24 pb-16 relative overflow-hidden">
@@ -36,11 +47,18 @@ export function Hero() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4"
         >
           <Button size="lg" className="rounded-full h-14 px-10 text-lg font-semibold gap-2.5" asChild>
             <a href="https://github.com/FeineCapital/pixie-desktop-app/releases/latest/download/Pixie.dmg">
               <AppleIcon className="w-5 h-5" />
               Download for Mac
+            </a>
+          </Button>
+          <Button size="lg" variant="outline" className="rounded-full h-14 px-10 text-lg font-semibold gap-2.5 border-white/20 hover:bg-white/10" asChild>
+            <a href="https://github.com/FeineCapital/pixie-chrome-extension" target="_blank" rel="noopener noreferrer">
+              <ChromeIcon className="w-5 h-5" />
+              Chrome Extension
             </a>
           </Button>
         </motion.div>
