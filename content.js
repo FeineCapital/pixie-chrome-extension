@@ -60,20 +60,7 @@
   function computeOutlineColor() {
     const lum = getPageLuminance();
     outlineColor = lum < 128 ? '#ffffff' : '#1a1a1a';
-  }
-
-  function updateOutlineCSS() {
-    const style = document.getElementById('__ec_styles');
-    if (!style) return;
-    const oc = outlineColor;
-    const ocAlpha = outlineColor === '#ffffff' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)';
-    style.textContent = style.textContent
-      .replace(/box-shadow:\s*0 0 0 2px [^,]+, 0 0 8px [^!]+/g,
-        `box-shadow: 0 0 0 2px ${oc}, 0 0 8px ${ocAlpha}`)
-      .replace(/border:\s*2px dashed [^!]+/g,
-        `border: 2px dashed ${oc}`)
-      .replace(/border:\s*1\.5px solid [^!]+/g,
-        `border: 1.5px solid ${oc}`);
+    document.documentElement.style.setProperty('--ec-outline', outlineColor);
   }
 
   /* ══════════════════════════════════
@@ -113,8 +100,8 @@
       #__ec-sel {
         position: fixed !important; z-index: 2147483641 !important;
         pointer-events: none !important;
-        border: 2px dashed #00e676 !important; border-radius: 10px !important;
-        background: rgba(0,230,118,0.04) !important;
+        border: 2px solid var(--ec-outline, #fff) !important; border-radius: 10px !important;
+        background: rgba(255,255,255,0.04) !important;
         box-sizing: border-box !important; display: none;
       }
       #__ec-ann {
@@ -125,7 +112,7 @@
       .ec-hnd {
         position: fixed !important; z-index: 2147483643 !important;
         width: 9px !important; height: 9px !important;
-        background: #fff !important; border: 1.5px solid #00e676 !important;
+        background: #fff !important; border: 1.5px solid rgba(255,255,255,0.5) !important;
         border-radius: 2px !important; box-shadow: 0 1px 4px rgba(0,0,0,0.4) !important;
         display: none;
       }
@@ -148,15 +135,15 @@
         display: flex !important; align-items: center !important; justify-content: center !important;
       }
       #__ec-tb button:hover { background: rgba(255,255,255,0.08) !important; color: rgba(255,255,255,0.9) !important; }
-      #__ec-tb button.ec-act { background: rgba(0,230,118,0.12) !important; color: #00e676 !important; }
+      #__ec-tb button.ec-act { background: rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.95) !important; }
       #__ec-tb .ec-sep { width: 1px !important; height: 22px !important; background: rgba(255,255,255,0.08) !important; margin: 0 2px !important; flex-shrink: 0 !important; }
       #__ec-tb .ec-col {
-        width: 18px !important; height: 18px !important; border-radius: 50% !important;
+        width: 20px !important; height: 20px !important; border-radius: 5px !important;
         padding: 0 !important; cursor: pointer !important; border: 2px solid transparent !important;
         transition: border-color 0.12s, transform 0.12s !important; flex-shrink: 0 !important;
       }
-      #__ec-tb .ec-col:hover { transform: scale(1.15) !important; }
-      #__ec-tb .ec-col.ec-act { border-color: rgba(255,255,255,0.8) !important; transform: scale(1.25) !important; }
+      #__ec-tb .ec-col:hover { transform: scale(1.1) !important; }
+      #__ec-tb .ec-col.ec-act { border-color: rgba(255,255,255,0.7) !important; transform: scale(1.1) !important; }
       #__ec-tb .ec-cap {
         background: rgba(0,230,118,0.12) !important;
         color: #00e676 !important; font-size: 13px !important; font-weight: 600 !important;
@@ -381,7 +368,7 @@
 
     const moveBtn = document.createElement('button');
     moveBtn.title = 'Move selection';
-    moveBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>';
+    moveBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>';
     moveBtn.dataset.tool = 'move';
     moveBtn.classList.add('ec-act');
     moveBtn.addEventListener('click', e => { e.stopPropagation(); setTool(null); });
@@ -451,8 +438,8 @@
     });
   }
 
-  const PEN_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300e676' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3C/svg%3E") 1 23, crosshair`;
-  const ERASER_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ff6b6b' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21'/%3E%3Cpath d='M22 21H7'/%3E%3C/svg%3E") 3 21, crosshair`;
+  const PEN_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3C/svg%3E") 1 23, crosshair`;
+  const ERASER_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0L21 5.2c.8.8.8 2 0 2.8L10 19'/%3E%3Cline x1='2' y1='20' x2='22' y2='20'/%3E%3C/svg%3E") 3 21, crosshair`;
 
   function setTool(tool) {
     activeTool = tool;
@@ -1102,7 +1089,6 @@
     window.__elementCaptureActive = true;
     injectStyles();
     computeOutlineColor();
-    updateOutlineCSS();
     createShield();
 
     document.addEventListener('mousedown', onMouseDown, true);
