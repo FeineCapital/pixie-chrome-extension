@@ -28,6 +28,10 @@ function findTarget(x: number, y: number): Element | null {
   }
 
   if (!found) return null;
+
+  // Only allow elements inside the active zone
+  if (!found.closest('[data-pixie-active-zone]')) return null;
+
   const foundTag = found.tagName.toLowerCase();
 
   if (['img', 'svg'].includes(foundTag)) {
@@ -44,14 +48,6 @@ function findTarget(x: number, y: number): Element | null {
   if (!isInDemoArea(found)) {
     const card = found.closest('[data-pixie-card]');
     if (card) return card;
-  }
-
-  // In restricted zones, only allow explicitly marked elements
-  const restrictedZone = found.closest('[data-pixie-zone="restricted"]');
-  if (restrictedZone) {
-    const allowed = found.closest('[data-pixie-allow]') as Element | null;
-    if (!allowed) return null;
-    return allowed;
   }
 
   return found;
@@ -147,7 +143,7 @@ export function PixieGlobalOverlay() {
   useEffect(() => {
     const style = document.createElement('style');
     style.id = 'pixie-cursor-override';
-    style.textContent = '* { cursor: default !important; }';
+    style.textContent = '[data-pixie-active-zone] * { cursor: default !important; }';
     document.head.appendChild(style);
     return () => style.remove();
   }, []);

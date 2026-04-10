@@ -567,7 +567,7 @@ export function Showcase() {
   ];
 
   return (
-    <section id="showcase" style={{ width: "100%", padding: "0 24px 64px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <section id="showcase" data-pixie-active-zone="true" style={{ width: "100%", padding: "0 24px 64px", display: "flex", flexDirection: "column", alignItems: "center" }}>
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
