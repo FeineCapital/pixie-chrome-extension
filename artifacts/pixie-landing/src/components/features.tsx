@@ -2,23 +2,23 @@ import { motion } from "framer-motion";
 
 const features = [
   {
-    title: "Zero Context Switching",
-    description: "Never leave your tab or open a clunky screenshot tool. Just hover, click, and paste.",
+    title: "Select & Capture",
+    description: "Drag to select any area on screen. Capture exactly what you need, nothing more.",
     className: "grad-card-1 text-zinc-900",
   },
   {
-    title: "DOM-Aware Precision",
-    description: "It knows what a button is. It knows what a card is. No more manual cropping.",
+    title: "Annotate Instantly",
+    description: "Draw, highlight, and mark up your captures with a built-in pencil and eraser.",
     className: "grad-card-2 text-zinc-900",
   },
   {
-    title: "Instant Clipboard",
-    description: "Pasted into Figma, Slack, or Linear before you even blink.",
+    title: "Clipboard Ready",
+    description: "Every capture is copied to your clipboard automatically. Paste into Figma, Slack, or anywhere.",
     className: "grad-card-3 text-zinc-900",
   },
   {
     title: "Retina Quality",
-    description: "Every capture is rendered at 2x resolution, guaranteeing crisp assets every time.",
+    description: "Crisp, high-resolution output every time. Built for displays that demand pixel perfection.",
     className: "grad-card-4 text-zinc-900",
   }
 ];
@@ -34,9 +34,9 @@ export function Features() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4 md:mb-6 leading-tight"
         >
-          Built for speed.
+          Capture. Annotate.
           <br />
-          Designed for exactness.
+          Share. Done.
         </motion.h2>
       </div>
 

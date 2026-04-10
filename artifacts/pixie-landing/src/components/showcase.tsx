@@ -12,9 +12,9 @@ export function Showcase() {
             transition={{ duration: 0.6 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-6 md:mb-8 leading-[0.95]"
           >
-            Your new
+            Simple by
             <br />
-            reflex.
+            design.
           </motion.h2>
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -24,10 +24,10 @@ export function Showcase() {
             className="space-y-4 md:space-y-6 text-base sm:text-lg md:text-xl text-zinc-400 max-w-md leading-relaxed"
           >
             <p>
-              Hold <kbd className="bg-zinc-800 text-zinc-200 px-1.5 py-0.5 rounded font-sans text-xs sm:text-sm mx-1">&#8984;</kbd> + <kbd className="bg-zinc-800 text-zinc-200 px-1.5 py-0.5 rounded font-sans text-xs sm:text-sm mx-1">Shift</kbd> and hover over any element on the page.
+              Trigger a capture from your menu bar or with a shortcut. Drag to select any region on screen.
             </p>
             <p>
-              Pixie highlights the exact DOM node you're targeting. One click, and a perfectly cropped, high-resolution PNG is copied to your clipboard.
+              Annotate with a pencil, erase mistakes, toggle rounded or sharp corners, then copy or save. That's the entire workflow.
             </p>
           </motion.div>
         </div>
@@ -42,16 +42,22 @@ export function Showcase() {
           <div className="aspect-[4/3] bg-zinc-900 rounded-2xl md:rounded-3xl border border-zinc-800 p-6 md:p-8 flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
             
-            <div className="relative z-10 w-full max-w-sm bg-white rounded-xl shadow-2xl p-5 md:p-6 cursor-crosshair group transition-all duration-300">
-              <div className="absolute -inset-2 rounded-[1.25rem] border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity bg-blue-500/10 pointer-events-none" />
-              <div className="absolute -top-10 -right-4 bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 pointer-events-none">
-                div.card
+            <div className="relative z-10 w-full max-w-sm">
+              <div className="bg-zinc-800 rounded-t-xl p-3 flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                </div>
+                <div className="flex-1 bg-zinc-700 rounded h-5 mx-8" />
               </div>
-              
-              <div className="h-6 md:h-8 w-2/3 bg-zinc-200 rounded mb-3 md:mb-4" />
-              <div className="h-3 md:h-4 w-full bg-zinc-100 rounded mb-2" />
-              <div className="h-3 md:h-4 w-4/5 bg-zinc-100 rounded mb-4 md:mb-6" />
-              <div className="h-8 md:h-10 w-28 md:w-32 bg-zinc-900 rounded-full" />
+              <div className="bg-zinc-850 border border-zinc-700 border-t-0 rounded-b-xl p-6 relative">
+                <div className="h-5 w-3/4 bg-zinc-700 rounded mb-3" />
+                <div className="h-3 w-full bg-zinc-800 rounded mb-2" />
+                <div className="h-3 w-4/5 bg-zinc-800 rounded mb-4" />
+                <div className="h-8 w-24 bg-zinc-700 rounded-full" />
+                <div className="absolute inset-2 border-2 border-dashed border-blue-400/60 rounded-lg pointer-events-none" />
+              </div>
             </div>
           </div>
         </motion.div>

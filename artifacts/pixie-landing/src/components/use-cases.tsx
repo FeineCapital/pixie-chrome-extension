@@ -3,15 +3,15 @@ import { motion } from "framer-motion";
 const roles = [
   {
     role: "Designers",
-    text: "Building moodboards and collecting inspiration has never been faster. Grab buttons, typography treatments, and layout sections without the messy OS-level cropping.",
+    text: "Grab UI references, capture components, and build visual libraries without leaving your workflow.",
   },
   {
     role: "Engineers",
-    text: "Filing bug reports? Capture the exact broken component, not the entire viewport. Share visual context instantly in PRs and Jira tickets.",
+    text: "Annotate bugs, capture exact screen regions, and paste directly into PRs, tickets, or docs.",
   },
   {
-    role: "Marketers",
-    text: "Collect competitor landing page sections, ad creatives, and social proof with one click. Build reference libraries effortlessly.",
+    role: "Everyone",
+    text: "Share what you see with anyone — no cropping, no file hunting, no extra steps.",
   }
 ];
 
@@ -25,7 +25,7 @@ export function UseCases() {
           viewport={{ once: true }}
           className="text-3xl sm:text-4xl md:text-5xl font-display font-bold"
         >
-          Built for the craft.
+          Made for people who ship.
         </motion.h2>
       </div>
 
