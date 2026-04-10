@@ -754,7 +754,9 @@
 
     } else if (state === S.HOVER && potentialDrag && captureMode === 'click') {
       potentialDrag = false;
-      if (!isOurs(e.target) && hoveredEl) {
+      // Note: e.target is always the shield div in click mode — don't use isOurs check.
+      // Just check that we have a highlighted element to capture.
+      if (hoveredEl) {
         e.preventDefault(); e.stopPropagation();
         const el = hoveredEl;
         unhighlight();
@@ -765,8 +767,6 @@
           ? Math.max(parseFloat(cs.borderRadius) || 0, selCornerRadius)
           : 0;
         doCapture().then(() => { selRect = null; });
-      } else {
-        potentialDrag = false;
       }
     }
   }
@@ -829,6 +829,7 @@
     }
 
     if (success) {
+      hideHint();
       chrome.runtime.sendMessage({ type: 'DEACTIVATE_GLOBAL' }).catch(() => {});
       deactivate();
     }
@@ -1017,8 +1018,10 @@
     } else if (mode === 'drag') {
       state = S.DRAG_READY;
       if (shield) shield.classList.add('drag-ready');
+      showModeHint('Click to drag — draw a rectangle');
     } else {
       state = S.HOVER;
+      showModeHint('Click to capture — hover an element, then click');
     }
   }
 
@@ -1027,6 +1030,7 @@
     window.__elementCaptureActive = false;
     state = S.HOVER;
     captureMode = 'click';
+    hideHint();
     unhighlight(); clearSel(); hideOverlay();
     removeShield();
     document.removeEventListener('mousedown', onMouseDown, true);
@@ -1039,6 +1043,63 @@
     document.removeEventListener('contextmenu', blockClick, true);
     document.removeEventListener('submit',      blockClick, true);
     chrome.runtime.sendMessage({ type: 'TAB_DEACTIVATED' });
+  }
+
+  /* ══════════════════════════════════
+     MODE HINT  (5-second activation label)
+  ══════════════════════════════════ */
+  let hintTimer = null;
+
+  function showModeHint(text) {
+    const old = document.getElementById('__ec-hint');
+    if (old) old.remove();
+    clearTimeout(hintTimer);
+
+    const h = document.createElement('div');
+    h.id = '__ec-hint';
+    h.style.cssText = [
+      'position:fixed !important',
+      'bottom:24px !important',
+      'left:50% !important',
+      'transform:translateX(-50%) translateY(8px) !important',
+      'z-index:2147483647 !important',
+      'pointer-events:none !important',
+      'background:rgba(10,11,22,0.92) !important',
+      'border:1px solid rgba(0,230,118,0.25) !important',
+      'border-radius:999px !important',
+      'padding:8px 18px !important',
+      'font:600 12px -apple-system,BlinkMacSystemFont,sans-serif !important',
+      'color:#fff !important',
+      'letter-spacing:0.01em !important',
+      'white-space:nowrap !important',
+      'box-shadow:0 4px 20px rgba(0,0,0,0.5) !important',
+      'backdrop-filter:blur(12px) !important',
+      '-webkit-backdrop-filter:blur(12px) !important',
+      'opacity:0 !important',
+      'transition:opacity 0.2s ease, transform 0.2s ease !important',
+    ].join(';');
+    h.textContent = text;
+    document.documentElement.appendChild(h);
+
+    requestAnimationFrame(() => {
+      h.style.setProperty('opacity', '1', 'important');
+      h.style.setProperty('transform', 'translateX(-50%) translateY(0)', 'important');
+    });
+
+    hintTimer = setTimeout(() => {
+      h.style.setProperty('opacity', '0', 'important');
+      h.style.setProperty('transform', 'translateX(-50%) translateY(8px)', 'important');
+      setTimeout(() => h.remove(), 250);
+    }, 5000);
+  }
+
+  function hideHint() {
+    clearTimeout(hintTimer);
+    const h = document.getElementById('__ec-hint');
+    if (h) {
+      h.style.setProperty('opacity', '0', 'important');
+      setTimeout(() => h.remove(), 250);
+    }
   }
 
   /* ══════════════════════════════════
