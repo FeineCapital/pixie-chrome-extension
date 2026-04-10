@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pixie</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { width: 420px; margin: 0; padding: 0; background: #171717 !important; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background: #171717 !important;
+      overflow: hidden;
+      animation: fadeIn 0.18s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .wrap {
+      padding: 20px 20px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+      background: #171717;
+    }
+
+    /* ── Header ── */
+    .header { display: flex; align-items: center; gap: 14px; padding: 0 4px 4px; }
+    .logo { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; }
+    .logo img { width: 100%; height: 100%; border-radius: 8px; filter: brightness(0) invert(1); }
+    .title { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+    .sub   { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+
+    /* ── Mode rows ── */
+    .modes { display: flex; flex-direction: column; gap: 6px; }
+
+    .mode-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      cursor: default;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .mode-row:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.1); }
+    .mode-row.active {
+      background: rgba(0,230,118,0.07);
+      border-color: rgba(0,230,118,0.25);
+    }
+
+    .mode-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.5);
+      transition: color 0.15s;
+    }
+    .mode-row.active .mode-icon { color: #00e676; background: rgba(0,230,118,0.1); }
+
+    .mode-info { flex: 1; min-width: 0; }
+    .mode-name { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.8); letter-spacing: -0.01em; }
+    .mode-row.active .mode-name { color: #fff; }
+    .mode-desc { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+
+    .mode-keys {
+      display: flex; align-items: center; gap: 3px; flex-shrink: 0;
+      margin-right: 6px;
+    }
+
+    .key {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 3px 7px;
+      font-family: 'SFMono-Regular', 'Consolas', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .key.unset { font-family: inherit; font-size: 11px; opacity: 0.5; }
+
+    .mode-btn {
+      width: 34px; height: 34px; flex-shrink: 0;
+      border: none; border-radius: 10px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5);
+      transition: background 0.12s, color 0.12s, transform 0.1s;
+      font-family: inherit;
+    }
+    .mode-btn:hover { background: rgba(255,255,255,0.14); color: #fff; transform: scale(1.05); }
+    .mode-btn:active { transform: scale(0.95); }
+    .mode-row.active .mode-btn { background: rgba(0,230,118,0.15); color: #00e676; }
+
+    /* ── Footer ── */
+    .footer {
+      display: flex; align-items: center; justify-content: center;
+      padding: 4px 4px 0;
+    }
+    .footer-txt { font-size: 11px; color: rgba(255,255,255,0.15); letter-spacing: 0.02em; }
+    .customize-link {
+      font-size: 9.5px; color: rgba(255,255,255,0.25);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; padding: 0;
+      transition: color 0.15s;
+    }
+    .customize-link:hover { color: rgba(255,255,255,0.55); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="header">
+      <div class="logo"><img src="icons/icon128.png" alt="Pixie" /></div>
+      <div>
+        <div class="title">Pixie</div>
+        <div class="sub">Screenshot Tool</div>
+      </div>
+    </div>
+
+    <div class="modes">
+
+      <!-- Click to capture -->
+      <div class="mode-row" id="row-click">
+        <div class="mode-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2v4M2 6h4M18 2v4M18 6h4M6 18v4M6 18H2M18 18v4M18 18h4"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div class="mode-info">
+          <div class="mode-name">Click to capture</div>
+          <div class="mode-desc">Hover element, click to copy</div>
+        </div>
+        <div class="mode-keys" id="keys-click"><span class="key unset">—</span></div>
+        <button class="mode-btn" id="btn-click" title="Activate click to capture">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+        </button>
+      </div>
+
+      <!-- Drag to select -->
+      <div class="mode-row" id="row-drag">
+        <div class="mode-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/>
+          </svg>
+        </div>
+        <div class="mode-info">
+          <div class="mode-name">Click to drag</div>
+          <div class="mode-desc">Draw area, then copy or save</div>
+        </div>
+        <div class="mode-keys" id="keys-drag"><span class="key unset">—</span></div>
+        <button class="mode-btn" id="btn-drag" title="Activate drag to select">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+        </button>
+      </div>
+
+      <!-- Full screenshot -->
+      <div class="mode-row" id="row-full">
+        <div class="mode-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+          </svg>
+        </div>
+        <div class="mode-info">
+          <div class="mode-name">Full screen shot</div>
+          <div class="mode-desc">Capture entire visible page</div>
+        </div>
+        <div class="mode-keys" id="keys-full"><span class="key unset">—</span></div>
+        <button class="mode-btn" id="btn-full" title="Take full screenshot">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <span class="footer-txt">· Press Esc on any page to stop ·</span>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
