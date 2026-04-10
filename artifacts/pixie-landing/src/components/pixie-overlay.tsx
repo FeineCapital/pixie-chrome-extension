@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import html2canvas from "html2canvas";
 
 const SEMANTIC = new Set(['a', 'button', 'input', 'textarea', 'select', 'img', 'video', 'canvas', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'kbd', 'label']);
@@ -69,81 +69,70 @@ interface BoxInfo {
   radius: number;
 }
 
-async function captureRegion(box: BoxInfo, overlayId: string): Promise<void> {
-  const overlay = document.getElementById(overlayId);
-  if (overlay) overlay.style.display = 'none';
-
-  const scale = 2;
-  const sx = window.scrollX;
-  const sy = window.scrollY;
-
-  try {
-    const raw = await html2canvas(document.body, {
-      scale,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      x: box.x + sx,
-      y: box.y + sy,
-      width: box.w,
-      height: box.h,
-      scrollX: -sx,
-      scrollY: -sy,
-      windowWidth: document.documentElement.clientWidth,
-      windowHeight: document.documentElement.clientHeight,
-    });
-
-    const r = box.radius * scale;
-    const cw = raw.width;
-    const ch = raw.height;
-
-    const out = document.createElement('canvas');
-    out.width = cw;
-    out.height = ch;
-    const ctx = out.getContext('2d');
-    if (!ctx) return;
-
-    if (r > 0) {
-      ctx.beginPath();
-      ctx.moveTo(r, 0);
-      ctx.lineTo(cw - r, 0);
-      ctx.quadraticCurveTo(cw, 0, cw, r);
-      ctx.lineTo(cw, ch - r);
-      ctx.quadraticCurveTo(cw, ch, cw - r, ch);
-      ctx.lineTo(r, ch);
-      ctx.quadraticCurveTo(0, ch, 0, ch - r);
-      ctx.lineTo(0, r);
-      ctx.quadraticCurveTo(0, 0, r, 0);
-      ctx.closePath();
-      ctx.clip();
-    }
-
-    ctx.drawImage(raw, 0, 0);
-
-    await new Promise<void>((resolve) => {
-      out.toBlob(async (blob) => {
-        if (!blob) { resolve(); return; }
-        try {
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-        } catch {}
-        resolve();
-      }, 'image/png');
-    });
-  } finally {
-    if (overlay) overlay.style.display = '';
-  }
+function roundedClip(ctx: CanvasRenderingContext2D, w: number, h: number, r: number) {
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(w - r, 0);
+  ctx.quadraticCurveTo(w, 0, w, r);
+  ctx.lineTo(w, h - r);
+  ctx.quadraticCurveTo(w, h, w - r, h);
+  ctx.lineTo(r, h);
+  ctx.quadraticCurveTo(0, h, 0, h - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.clip();
 }
 
-const OVERLAY_ID = 'pixie-global-overlay';
+async function captureTarget(target: Element, outlineRadius: number): Promise<boolean> {
+  const scale = 2;
+
+  const raw = await html2canvas(target as HTMLElement, {
+    scale,
+    useCORS: true,
+    logging: false,
+    backgroundColor: null,
+    removeContainer: true,
+  });
+
+  const cw = raw.width;
+  const ch = raw.height;
+  const r = outlineRadius * scale;
+
+  const out = document.createElement('canvas');
+  out.width = cw;
+  out.height = ch;
+  const ctx = out.getContext('2d');
+  if (!ctx) return false;
+
+  if (r > 0) {
+    roundedClip(ctx, cw, ch, r);
+  }
+
+  ctx.drawImage(raw, 0, 0);
+
+  return new Promise<boolean>((resolve) => {
+    out.toBlob(async (blob) => {
+      if (!blob) { resolve(false); return; }
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        resolve(true);
+      } catch {
+        resolve(false);
+      }
+    }, 'image/png');
+  });
+}
 
 export function PixieGlobalOverlay() {
   const [box, setBox] = useState<BoxInfo | null>(null);
   const [mouse, setMouse] = useState<{ x: number; y: number } | null>(null);
   const [inDemo, setInDemo] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'capturing' | 'copied'>('idle');
+  const [toast, setToast] = useState(false);
+  const [busy, setBusy] = useState(false);
   const targetRef = useRef<Element | null>(null);
-  const boxRef = useRef<BoxInfo | null>(null);
-  const copiedTimer = useRef<ReturnType<typeof setTimeout>>();
+  const radiusRef = useRef<number>(4);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>();
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
@@ -152,6 +141,12 @@ export function PixieGlobalOverlay() {
     style.textContent = '* { cursor: default !important; }';
     document.head.appendChild(style);
     return () => style.remove();
+  }, []);
+
+  const showToast = useCallback(() => {
+    setToast(true);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(false), 2200);
   }, []);
 
   useEffect(() => {
@@ -168,46 +163,39 @@ export function PixieGlobalOverlay() {
           const { pad, radius } = getOutline(target);
           const b: BoxInfo = { x: r2.left - pad, y: r2.top - pad, w: r2.width + pad * 2, h: r2.height + pad * 2, radius };
           setBox(b);
-          boxRef.current = b;
+          radiusRef.current = radius;
         } else {
           setBox(null);
-          boxRef.current = null;
         }
       });
     }
 
     async function onClick(e: MouseEvent) {
       const target = targetRef.current;
-      const currentBox = boxRef.current;
-      if (!target || !currentBox || isInDemoArea(target)) return;
+      if (!target || isInDemoArea(target) || busy) return;
       e.preventDefault();
       e.stopPropagation();
-      setStatus('capturing');
+      setBusy(true);
       try {
-        await captureRegion(currentBox, OVERLAY_ID);
-        setStatus('copied');
-        clearTimeout(copiedTimer.current);
-        copiedTimer.current = setTimeout(() => setStatus('idle'), 2200);
-      } catch {
-        setStatus('idle');
-      }
+        const ok = await captureTarget(target, radiusRef.current);
+        if (ok) showToast();
+      } catch {}
+      setBusy(false);
     }
 
     document.addEventListener('mousemove', onMove, { passive: true });
-    document.addEventListener('mouseleave', () => { setBox(null); setMouse(null); boxRef.current = null; });
+    document.addEventListener('mouseleave', () => { setBox(null); setMouse(null); });
     document.addEventListener('click', onClick, { capture: true });
     return () => {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('click', onClick, { capture: true });
       cancelAnimationFrame(rafRef.current);
-      clearTimeout(copiedTimer.current);
+      clearTimeout(toastTimer.current);
     };
-  }, []);
-
-  const labelText = status === 'copied' ? 'Copied!' : status === 'capturing' ? 'Capturing…' : 'Click to capture';
+  }, [busy, showToast]);
 
   return (
-    <div id={OVERLAY_ID} style={{ pointerEvents: 'none' }}>
+    <>
       {box && (
         <div style={{
           position: 'fixed',
@@ -217,7 +205,7 @@ export function PixieGlobalOverlay() {
           height: box.h,
           border: '2px solid #34D399',
           borderRadius: `${box.radius}px`,
-          background: status === 'copied' ? 'rgba(52,211,153,0.09)' : 'rgba(52,211,153,0.04)',
+          background: 'rgba(52,211,153,0.04)',
           pointerEvents: 'none',
           zIndex: 99999,
         }} />
@@ -230,18 +218,42 @@ export function PixieGlobalOverlay() {
           background: '#171717',
           borderRadius: '8px',
           padding: '5px 10px',
-          display: 'flex',
-          alignItems: 'center',
           pointerEvents: 'none',
           zIndex: 100000,
           whiteSpace: 'nowrap',
           boxShadow: '0 2px 12px rgba(0,0,0,0.22)',
         }}>
           <span style={{ fontSize: '10px', fontWeight: 600, color: '#fff', fontFamily: 'Arial, sans-serif' }}>
-            {labelText}
+            Click to capture
           </span>
         </div>
       )}
-    </div>
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 32,
+          right: 32,
+          background: '#171717',
+          borderRadius: '12px',
+          padding: '12px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          pointerEvents: 'none',
+          zIndex: 100001,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+          opacity: toast ? 1 : 0,
+          transform: toast ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'opacity 0.25s ease, transform 0.25s ease',
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M5 13l4 4L19 7" />
+        </svg>
+        <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff', fontFamily: 'Arial, sans-serif' }}>
+          Image copied
+        </span>
+      </div>
+    </>
   );
 }
