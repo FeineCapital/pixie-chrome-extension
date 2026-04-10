@@ -13,7 +13,7 @@
       -webkit-font-smoothing: antialiased;
       background: #171717;
       overflow: hidden;
-      animation: fadeIn 0.22s ease both;
+      animation: fadeIn 0.18s ease both;
     }
 
     @keyframes fadeIn {
@@ -21,321 +21,169 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .wrap {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .wrap { padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 10px; }
 
-    .header {
+    /* ── Header ── */
+    .header { display: flex; align-items: center; gap: 10px; padding: 0 2px 2px; }
+    .logo { width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0; }
+    .logo img { width: 100%; height: 100%; border-radius: 6px; filter: invert(1); }
+    .title { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+    .sub   { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+
+    /* ── Mode rows ── */
+    .modes { display: flex; flex-direction: column; gap: 4px; }
+
+    .mode-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 2px;
-    }
-
-    .logo {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      flex-shrink: 0;
-    }
-
-    .logo img {
-      width: 100%;
-      height: 100%;
-      border-radius: 7px;
-      filter: invert(1);
-    }
-
-    .title { font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: -0.01em; }
-    .sub   { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 400; letter-spacing: 0.02em; margin-top: 1px; }
-
-    .status-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
       padding: 10px 12px;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 10px;
+      cursor: default;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .mode-row:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.1); }
+    .mode-row.active {
+      background: rgba(0,230,118,0.07);
+      border-color: rgba(0,230,118,0.25);
     }
 
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      transition: background 0.3s, box-shadow 0.3s;
-      flex-shrink: 0;
-    }
-
-    .dot.on {
-      background: #fff;
-      box-shadow: 0 0 6px rgba(255,255,255,0.5);
-      animation: blink 2s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%,100% { box-shadow: 0 0 4px rgba(255,255,255,0.4); }
-      50%      { box-shadow: 0 0 10px rgba(255,255,255,0.7); }
-    }
-
-    .status-text { font-size: 12px; color: rgba(255,255,255,0.35); transition: color 0.3s; }
-    .status-text.on { color: #ffffff; font-weight: 500; }
-
-    .status-badge {
-      margin-left: auto;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 100px;
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.25);
-      transition: background 0.3s, color 0.3s;
-    }
-
-    .status-badge.on {
-      background: rgba(255,255,255,0.12);
-      color: #ffffff;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 11px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 700;
-      color: #171717;
-      background: #ffffff;
-      transition: transform 0.12s, opacity 0.18s;
-      position: relative;
-    }
-
-    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn:active { transform: scale(0.98); }
-
-    .btn.cancel {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #ffffff;
-    }
-    .btn.cancel:hover { background: rgba(255,255,255,0.12); }
-
-    .btn-row { display: flex; align-items: center; justify-content: center; gap: 7px; }
-    .btn-row svg { width: 14px; height: 14px; }
-
-    .hint {
-      margin-top: 2px;
-      font-size: 11px;
-      color: rgba(255,255,255,0.2);
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    .feedback {
-      margin-top: 4px;
-      min-height: 14px;
-      font-size: 11px;
-      text-align: center;
-      color: #ffffff;
-      opacity: 0;
-      transition: opacity 0.3s;
-      font-weight: 500;
-    }
-    .feedback.show { opacity: 1; }
-
-    .shortcut-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 10px;
-      padding: 12px 14px;
-    }
-
-    .sc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .sc-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.35);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .sc-edit {
-      font-size: 10px;
-      color: rgba(255,255,255,0.4);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 500;
+    .mode-icon {
+      width: 30px; height: 30px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 7px;
+      color: rgba(255,255,255,0.5);
       transition: color 0.15s;
-      padding: 0;
     }
-    .sc-edit:hover { color: rgba(255,255,255,0.7); }
+    .mode-row.active .mode-icon { color: #00e676; background: rgba(0,230,118,0.1); }
 
-    .sc-keys {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      flex-wrap: wrap;
+    .mode-info { flex: 1; min-width: 0; }
+    .mode-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); letter-spacing: -0.01em; }
+    .mode-row.active .mode-name { color: #fff; }
+    .mode-desc { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+
+    .mode-keys {
+      display: flex; align-items: center; gap: 2px; flex-shrink: 0;
+      margin-right: 6px;
     }
 
     .key {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.08);
       border-bottom-width: 2px;
-      border-radius: 5px;
-      padding: 3px 8px;
+      border-radius: 4px;
+      padding: 2px 6px;
       font-family: 'SFMono-Regular', 'Consolas', monospace;
-      font-size: 10.5px;
-      color: rgba(255,255,255,0.5);
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.4);
       line-height: 1;
+      white-space: nowrap;
     }
+    .key.unset { font-family: inherit; font-size: 9px; opacity: 0.5; }
 
-    .sep { color: rgba(255,255,255,0.15); font-size: 9px; padding: 0 1px; }
-
-    .setup-guide {
-      display: none;
-      margin-top: 8px;
-      padding: 10px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px;
-    }
-
-    .setup-guide.visible { display: block; }
-
-    .setup-steps { list-style: none; display: flex; flex-direction: column; gap: 5px; }
-
-    .setup-steps li {
-      display: flex;
-      align-items: flex-start;
-      gap: 7px;
-      font-size: 10.5px;
-      color: rgba(255,255,255,0.45);
-      line-height: 1.4;
-    }
-
-    .step-num {
-      width: 16px; height: 16px;
-      border-radius: 50%;
+    .mode-btn {
+      width: 26px; height: 26px; flex-shrink: 0;
+      border: none; border-radius: 7px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
       background: rgba(255,255,255,0.08);
       color: rgba(255,255,255,0.5);
-      font-size: 9px;
-      font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      margin-top: 0.5px;
-    }
-
-    .setup-btn {
-      margin-top: 10px;
-      width: 100%;
-      padding: 7px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 7px;
-      color: rgba(255,255,255,0.5);
+      transition: background 0.12s, color 0.12s, transform 0.1s;
       font-family: inherit;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
     }
-    .setup-btn:hover { background: rgba(255,255,255,0.1); }
+    .mode-btn:hover { background: rgba(255,255,255,0.14); color: #fff; transform: scale(1.05); }
+    .mode-btn:active { transform: scale(0.95); }
+    .mode-row.active .mode-btn { background: rgba(0,230,118,0.15); color: #00e676; }
 
+    /* ── Footer ── */
     .footer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      padding: 0 4px 2px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 2px 0;
     }
-
-    .footer-txt {
-      font-size: 9.5px;
-      color: rgba(255,255,255,0.15);
-      letter-spacing: 0.03em;
+    .footer-txt { font-size: 9.5px; color: rgba(255,255,255,0.15); letter-spacing: 0.02em; }
+    .customize-link {
+      font-size: 9.5px; color: rgba(255,255,255,0.25);
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; padding: 0;
+      transition: color 0.15s;
     }
-    .footer-dot { width: 2px; height: 2px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+    .customize-link:hover { color: rgba(255,255,255,0.55); }
   </style>
 </head>
 <body>
   <div class="wrap">
 
-    <div class="card">
-      <div class="header">
-        <div class="logo">
-          <img src="icons/icon128.png" alt="Pixie" />
-        </div>
-        <div>
-          <div class="title">Pixie</div>
-          <div class="sub">Screenshot Tool</div>
-        </div>
+    <div class="header">
+      <div class="logo"><img src="icons/icon128.png" alt="Pixie" /></div>
+      <div>
+        <div class="title">Pixie</div>
+        <div class="sub">Screenshot Tool</div>
       </div>
     </div>
 
-    <div class="status-bar">
-      <div class="dot" id="dot"></div>
-      <span class="status-text" id="statusText">Ready</span>
-      <span class="status-badge" id="badge">Off</span>
-    </div>
+    <div class="modes">
 
-    <button class="btn" id="captureBtn">
-      <div class="btn-row">
-        <svg id="btnIcon" viewBox="0 0 16 16" fill="none">
-          <path d="M1.5 4V3C1.5 2.17 2.17 1.5 3 1.5H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          <path d="M12 1.5H13C13.83 1.5 14.5 2.17 14.5 3V4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          <path d="M14.5 12V13C14.5 13.83 13.83 14.5 13 14.5H12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          <path d="M4 14.5H3C2.17 14.5 1.5 13.83 1.5 13V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/>
-        </svg>
-        <span id="btnText">Enable Capture</span>
-      </div>
-    </button>
-
-    <p class="hint" id="hint">Click to enable — hover an element, click to copy as PNG</p>
-    <div class="feedback" id="feedback"></div>
-
-    <div class="shortcut-card">
-      <div class="sc-header">
-        <span class="sc-title">Keyboard Shortcut</span>
-        <button class="sc-edit" id="scEdit">Customize</button>
-      </div>
-      <div class="sc-keys" id="scKeys">
-        <span class="key" style="opacity:0.4">Loading...</span>
+      <!-- Click to capture -->
+      <div class="mode-row" id="row-click">
+        <div class="mode-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2v4M2 6h4M18 2v4M18 6h4M6 18v4M6 18H2M18 18v4M18 18h4"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div class="mode-info">
+          <div class="mode-name">Click to capture</div>
+          <div class="mode-desc">Hover element, click to copy</div>
+        </div>
+        <div class="mode-keys" id="keys-click"><span class="key unset">—</span></div>
+        <button class="mode-btn" id="btn-click" title="Activate click to capture">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+        </button>
       </div>
 
-      <div class="setup-guide" id="setupGuide">
-        <ol class="setup-steps">
-          <li><span class="step-num">1</span>Click <strong style="color:rgba(255,255,255,0.6)">"Customize"</strong> above to open Chrome's shortcut settings</li>
-          <li><span class="step-num">2</span>Find <strong style="color:rgba(255,255,255,0.6)">"Pixie"</strong> in the list</li>
-          <li><span class="step-num">3</span>Click the pencil icon next to <strong style="color:rgba(255,255,255,0.6)">"Toggle Pixie"</strong></li>
-          <li><span class="step-num">4</span>Press your preferred key combo</li>
-        </ol>
-        <button class="setup-btn" id="setupBtn">Open Shortcut Settings</button>
+      <!-- Drag to select -->
+      <div class="mode-row" id="row-drag">
+        <div class="mode-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/>
+          </svg>
+        </div>
+        <div class="mode-info">
+          <div class="mode-name">Drag to select</div>
+          <div class="mode-desc">Draw area, then copy or save</div>
+        </div>
+        <div class="mode-keys" id="keys-drag"><span class="key unset">—</span></div>
+        <button class="mode-btn" id="btn-drag" title="Activate drag to select">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+        </button>
       </div>
+
+      <!-- Full screenshot -->
+      <div class="mode-row" id="row-full">
+        <div class="mode-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+          </svg>
+        </div>
+        <div class="mode-info">
+          <div class="mode-name">Full screenshot</div>
+          <div class="mode-desc">Capture entire visible page</div>
+        </div>
+        <div class="mode-keys" id="keys-full"><span class="key unset">—</span></div>
+        <button class="mode-btn" id="btn-full" title="Take full screenshot">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+        </button>
+      </div>
+
     </div>
 
     <div class="footer">
-      <div class="footer-dot"></div>
-      <span class="footer-txt">Press Esc on any page to stop</span>
-      <div class="footer-dot"></div>
+      <span class="footer-txt">· Press Esc on any page to stop ·</span>
+      <button class="customize-link" id="customizeBtn">Customize shortcuts</button>
     </div>
 
   </div>

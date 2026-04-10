@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Pixie",
-  "version": "1.2.0",
-  "description": "Hover over any element and capture it to your clipboard as PNG.",
+  "version": "1.3.0",
+  "description": "Capture elements, selections, and full pages — right from your browser.",
   "permissions": [
     "activeTab",
     "scripting",
@@ -22,11 +22,25 @@
     "service_worker": "background.js"
   },
   "commands": {
-    "activate-capture": {
-      "description": "Toggle Pixie",
+    "capture-click": {
+      "description": "Click to capture",
       "suggested_key": {
-        "default": "Ctrl+Shift+E",
-        "mac": "Command+Shift+E"
+        "default": "Ctrl+Shift+1",
+        "mac": "Command+Shift+1"
+      }
+    },
+    "capture-drag": {
+      "description": "Drag to select",
+      "suggested_key": {
+        "default": "Ctrl+Shift+2",
+        "mac": "Command+Shift+2"
+      }
+    },
+    "capture-full": {
+      "description": "Full screenshot",
+      "suggested_key": {
+        "default": "Ctrl+Shift+3",
+        "mac": "Command+Shift+3"
       }
     }
   },

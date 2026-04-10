@@ -1,7 +1,6 @@
-// Per-tab activation state
-const activeTabs = new Set();
+// tabId → mode ('click' | 'drag' | 'full')
+const activeTabs = new Map();
 
-/* ─── Helpers ─── */
 function canInjectTab(url) {
   if (!url) return false;
   return !url.startsWith('chrome://') &&
@@ -16,12 +15,12 @@ async function getCurrentTab() {
   return tab || null;
 }
 
-async function activateTab(tabId, url) {
+async function activateTab(tabId, url, mode = 'click') {
   if (!canInjectTab(url)) return false;
   try {
     await chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] });
-    activeTabs.add(tabId);
-    chrome.tabs.sendMessage(tabId, { type: 'ACTIVATE' }).catch(() => {});
+    activeTabs.set(tabId, mode);
+    chrome.tabs.sendMessage(tabId, { type: 'ACTIVATE_MODE', mode }).catch(() => {});
     return true;
   } catch (e) {
     return false;
@@ -33,40 +32,38 @@ async function deactivateTab(tabId) {
   chrome.tabs.sendMessage(tabId, { type: 'DEACTIVATE' }).catch(() => {});
 }
 
-/* ─── Clean up state when tab closes or navigates ─── */
 chrome.tabs.onRemoved.addListener((tabId) => activeTabs.delete(tabId));
 chrome.tabs.onUpdated.addListener((tabId, info) => {
   if (info.status === 'loading') activeTabs.delete(tabId);
 });
 
-/* ─── Safe sendResponse wrapper ─── */
 function safeSend(sendResponse, data) {
   try { sendResponse(data); } catch (_) {}
 }
 
-/* ─── Message handler ─── */
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.type === 'GET_STATE') {
-    // Return active state for the current tab
     getCurrentTab().then(tab => {
-      safeSend(sendResponse, { active: tab ? activeTabs.has(tab.id) : false });
+      const mode = tab ? (activeTabs.get(tab.id) || null) : null;
+      safeSend(sendResponse, { active: !!mode, mode });
     });
     return true;
   }
 
-  if (msg.type === 'ACTIVATE_GLOBAL') {
-    // Activate only the current active tab
+  if (msg.type === 'ACTIVATE_CLICK' || msg.type === 'ACTIVATE_DRAG' || msg.type === 'ACTIVATE_FULL') {
+    const mode = msg.type === 'ACTIVATE_CLICK' ? 'click'
+               : msg.type === 'ACTIVATE_DRAG'  ? 'drag'
+               :                                  'full';
     getCurrentTab().then(async (tab) => {
       if (!tab) { safeSend(sendResponse, { ok: false }); return; }
-      const ok = await activateTab(tab.id, tab.url);
+      const ok = await activateTab(tab.id, tab.url, mode);
       safeSend(sendResponse, { ok });
     });
     return true;
   }
 
   if (msg.type === 'DEACTIVATE_GLOBAL') {
-    // Deactivate only the current active tab
     getCurrentTab().then(async (tab) => {
       if (tab) await deactivateTab(tab.id);
       safeSend(sendResponse, { ok: true });
@@ -75,7 +72,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   if (msg.type === 'TAB_ACTIVATED') {
-    if (sender.tab) activeTabs.add(sender.tab.id);
+    if (sender.tab) activeTabs.set(sender.tab.id, msg.mode || 'click');
     safeSend(sendResponse, { ok: true });
     return false;
   }
@@ -86,7 +83,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return false;
   }
 
-  // Screenshot: capture visible tab and send back
   if (msg.type === 'TAKE_SCREENSHOT') {
     const tabId    = sender.tab ? sender.tab.id      : null;
     const windowId = sender.tab ? sender.tab.windowId : undefined;
@@ -171,17 +167,24 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-/* ─── Keyboard shortcut: toggle on current tab only ─── */
+/* ─── Keyboard shortcuts ─── */
 chrome.commands.onCommand.addListener(async (command) => {
-  if (command !== 'activate-capture') return;
+  const modeMap = {
+    'capture-click': 'click',
+    'capture-drag':  'drag',
+    'capture-full':  'full',
+  };
+  const mode = modeMap[command];
+  if (!mode) return;
+
   const tab = await getCurrentTab();
   if (!tab || !tab.id) return;
 
-  if (activeTabs.has(tab.id)) {
+  if (activeTabs.has(tab.id) && activeTabs.get(tab.id) === mode) {
     await deactivateTab(tab.id);
     chrome.runtime.sendMessage({ type: 'MODE_DEACTIVATED' }).catch(() => {});
   } else {
-    await activateTab(tab.id, tab.url);
-    chrome.runtime.sendMessage({ type: 'MODE_ACTIVATED' }).catch(() => {});
+    await activateTab(tab.id, tab.url, mode);
+    chrome.runtime.sendMessage({ type: 'MODE_ACTIVATED', mode }).catch(() => {});
   }
 });

@@ -1,13 +1,14 @@
 (() => {
-  if (window.__elementCaptureActive !== undefined) return;
+  if (window.__pixieInjected) return;
+  window.__pixieInjected = true;
   window.__elementCaptureActive = false;
 
   /* ═══ State ═══ */
-  const S = { HOVER: 'hover', DRAG: 'drag', SELECTED: 'selected' };
+  const S = { HOVER: 'hover', DRAG: 'drag', DRAG_READY: 'drag_ready', SELECTED: 'selected' };
   let state = S.HOVER;
+  let captureMode = 'click'; // 'click' | 'drag' | 'full'
 
   /* ═══ DOM refs ═══ */
-  let tooltip   = null;
   let selBox    = null;
   let handles   = {};
   let toolbar   = null;
@@ -51,6 +52,9 @@
         background: transparent !important;
         cursor: default !important;
       }
+      #__ec-shield.drag-ready {
+        cursor: crosshair !important;
+      }
       #__ec-ov {
         position: fixed !important; pointer-events: none !important;
         z-index: 2147483638 !important;
@@ -64,32 +68,6 @@
         font: 600 11px -apple-system, BlinkMacSystemFont, sans-serif !important;
         padding: 3px 8px !important; border-radius: 4px !important;
         letter-spacing: 0.03em !important; display: none;
-      }
-      #__ec-tip {
-        position: fixed !important; z-index: 2147483645 !important;
-        pointer-events: none !important;
-        background: rgba(18,18,22,0.82) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        color: #fff !important;
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        font-style: normal !important;
-        font-variant: normal !important;
-        font-stretch: normal !important;
-        line-height: 1.4 !important;
-        letter-spacing: -0.01em !important;
-        word-spacing: normal !important;
-        text-transform: none !important;
-        text-decoration: none !important;
-        text-shadow: none !important;
-        -webkit-font-smoothing: antialiased !important;
-        padding: 8px 16px !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
-        white-space: nowrap !important;
       }
       #__ec-sel {
         position: fixed !important; z-index: 2147483641 !important;
@@ -167,10 +145,7 @@
   }
 
   /* ══════════════════════════════════
-     INTERACTION SHIELD
-     Transparent full-viewport div that sits above all page content
-     but below our UI. Blocks CSS :hover effects, clicks, and all
-     page interactions while capture mode is active.
+     SHIELD
   ══════════════════════════════════ */
   function createShield() {
     if (shield) return;
@@ -189,26 +164,6 @@
     const el = document.elementFromPoint(x, y);
     shield.style.pointerEvents = '';
     return el;
-  }
-
-  /* ══════════════════════════════════
-     TOOLTIP
-  ══════════════════════════════════ */
-  function createTooltip() {
-    tooltip = document.getElementById('__ec-tip') || null;
-    if (tooltip) return;
-    tooltip = document.createElement('div');
-    tooltip.id = '__ec-tip';
-    tooltip.textContent = 'Click to select · Drag to draw area';
-    document.documentElement.appendChild(tooltip);
-  }
-
-  function moveTooltip(e) {
-    if (!tooltip) return;
-    const x = e.clientX + 12;
-    const y = e.clientY - 30;
-    tooltip.style.left = Math.min(x, window.innerWidth  - 220) + 'px';
-    tooltip.style.top  = Math.max(y, 4) + 'px';
   }
 
   /* ══════════════════════════════════
@@ -233,7 +188,7 @@
   }
 
   /* ══════════════════════════════════
-     SCREEN OVERLAY (cmd+shift+5 style)
+     SCREEN OVERLAY
   ══════════════════════════════════ */
   function ensureOverlay() {
     if (ovCanvas) return;
@@ -269,7 +224,6 @@
     ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
 
-    // Dimension label
     const w = Math.round(r.width), h = Math.round(r.height);
     dimLabel.textContent = `${w} × ${h}`;
     dimLabel.style.display = 'block';
@@ -309,16 +263,16 @@
   }
 
   function posHandles(r) {
-    const HW = 9, HH = 4;
+    const HH = 4;
     const pos = {
-      nw: [r.left-HH,          r.top-HH],
-      n:  [r.left+r.width/2-HH, r.top-HH],
-      ne: [r.left+r.width-HH,   r.top-HH],
-      e:  [r.left+r.width-HH,   r.top+r.height/2-HH],
-      se: [r.left+r.width-HH,   r.top+r.height-HH],
-      s:  [r.left+r.width/2-HH, r.top+r.height-HH],
-      sw: [r.left-HH,           r.top+r.height-HH],
-      w:  [r.left-HH,           r.top+r.height/2-HH],
+      nw: [r.left-HH,            r.top-HH],
+      n:  [r.left+r.width/2-HH,  r.top-HH],
+      ne: [r.left+r.width-HH,    r.top-HH],
+      e:  [r.left+r.width-HH,    r.top+r.height/2-HH],
+      se: [r.left+r.width-HH,    r.top+r.height-HH],
+      s:  [r.left+r.width/2-HH,  r.top+r.height-HH],
+      sw: [r.left-HH,            r.top+r.height-HH],
+      w:  [r.left-HH,            r.top+r.height/2-HH],
     };
     for (const id of HIDS) {
       handles[id].style.left    = pos[id][0] + 'px';
@@ -385,7 +339,6 @@
       return b;
     }
 
-    // Move button (default active)
     const moveBtn = document.createElement('button');
     moveBtn.title = 'Move selection';
     moveBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>';
@@ -394,7 +347,6 @@
     moveBtn.addEventListener('click', e => { e.stopPropagation(); setTool(null); });
     toolbar.appendChild(moveBtn);
 
-    // Pencil (SVG — tip points bottom-left)
     const penBtn = document.createElement('button');
     penBtn.title = 'Pencil';
     penBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
@@ -402,7 +354,6 @@
     penBtn.addEventListener('click', e => { e.stopPropagation(); setTool(activeTool === 'pen' ? null : 'pen'); });
     toolbar.appendChild(penBtn);
 
-    // Eraser (SVG icon)
     const erBtn = document.createElement('button');
     erBtn.title = 'Eraser';
     erBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>';
@@ -412,7 +363,6 @@
 
     sep();
 
-    // Corner radius toggle (round ↔ sharp)
     const cornerBtn = document.createElement('button');
     cornerBtn.title = 'Toggle round/sharp corners';
     cornerBtn.dataset.action = 'corners';
@@ -432,7 +382,6 @@
 
     sep();
 
-    // Color dots
     for (const c of COLORS) {
       const dot = document.createElement('button');
       dot.className = 'ec-col' + (c === activeColor ? ' ec-act' : '');
@@ -445,21 +394,18 @@
 
     sep();
 
-    // Copy to clipboard
     const cap = mkBtn('Copy', 'Copy to clipboard  (⌘C)');
     cap.className += ' ec-cap';
     cap.addEventListener('click', e => { e.stopPropagation(); doCapture(true); });
     toolbar.appendChild(cap);
 
-    // Save to desktop
-    const sav = mkBtn('Save', 'Save to desktop  (↵ Enter)');
+    const sav = mkBtn('Save', 'Save to downloads  (↵ Enter)');
     sav.className += ' ec-sav';
     sav.addEventListener('click', e => { e.stopPropagation(); doSave(true); });
     toolbar.appendChild(sav);
 
     sep();
 
-    // Close
     const close = mkBtn('×', 'Cancel selection');
     close.className += ' ec-x';
     close.addEventListener('click', e => { e.stopPropagation(); clearSel(); });
@@ -529,7 +475,6 @@
     setTool(null);
     state = S.SELECTED;
     unhighlight();
-    if (tooltip) tooltip.style.opacity = '0';
   }
 
   function updateSel(r) {
@@ -541,7 +486,7 @@
   }
 
   function clearSel() {
-    state = S.HOVER;
+    state = captureMode === 'drag' ? S.DRAG_READY : S.HOVER;
     selRect = null; savedPixels = null;
     isMovingSel = false; moveStart = null;
     activeTool = null;
@@ -550,7 +495,6 @@
     if (toolbar)   toolbar.style.display = 'none';
     hideHandles();
     hideOverlay();
-    if (tooltip) tooltip.style.opacity = '1';
   }
 
   function clearAnnotations() {
@@ -560,7 +504,7 @@
   }
 
   /* ══════════════════════════════════
-     HOVER HIGHLIGHTING
+     HOVER HIGHLIGHTING (click mode only)
   ══════════════════════════════════ */
   function highlight(el) {
     if (el === hoveredEl) return;
@@ -601,7 +545,6 @@
     if (isOurs(start)) return null;
 
     let el = start;
-    // Walk up from inline/text nodes to first block-level parent
     while (el && el !== document.body) {
       const d = window.getComputedStyle(el).display;
       if (['block','flex','grid','inline-block','inline-flex','table-cell','list-item'].includes(d)) break;
@@ -609,10 +552,8 @@
     }
     if (!el || el === document.body) return start;
 
-    // If this element already has a visual boundary, use it
     if (hasVisualBoundary(el)) return el;
 
-    // Walk up a few levels looking for the nearest visual container
     let cur = el.parentElement;
     for (let i = 0; i < 4 && cur && cur !== document.body; i++) {
       if (hasVisualBoundary(cur)) return cur;
@@ -625,7 +566,7 @@
     if (!el) return false;
     if (el.id && el.id.startsWith('__ec')) return true;
     if (el.classList && el.classList.contains('ec-hnd')) return true;
-    if (el.closest && el.closest('#__ec-tb,#__ec-sel,#__ec-ann,#__ec-tip,#__ec-shield')) return true;
+    if (el.closest && el.closest('#__ec-tb,#__ec-sel,#__ec-ann,#__ec-shield')) return true;
     return false;
   }
 
@@ -765,11 +706,17 @@
     if (isOurs(e.target)) return;
 
     if (state === S.HOVER) {
+      // Click mode: detect click vs drag
       potentialDrag = true;
       dragStart = { x: e.clientX, y: e.clientY };
       e.preventDefault();
+    } else if (state === S.DRAG_READY) {
+      // Drag mode: immediately start drawing
+      state = S.DRAG;
+      dragStart = { x: e.clientX, y: e.clientY };
+      ensureSelBox();
+      e.preventDefault();
     } else if (state === S.SELECTED) {
-      // Click outside our UI → clear selection, go back to hover
       clearSel();
     }
   }
@@ -777,14 +724,12 @@
   function onMouseMove(e) {
     if (!window.__elementCaptureActive) return;
 
-    if (state === S.HOVER) {
-      moveTooltip(e);
+    if (state === S.HOVER && captureMode === 'click') {
       if (potentialDrag) {
         const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
         if (Math.sqrt(dx*dx+dy*dy) > 5) {
           state = S.DRAG;
           unhighlight();
-          if (tooltip) tooltip.style.opacity = '0';
           ensureSelBox();
         }
       } else {
@@ -808,29 +753,26 @@
       hideOverlay();
       if (r.width < 10 || r.height < 10) {
         if (selBox) selBox.style.display = 'none';
-        state = S.HOVER;
-        if (tooltip) tooltip.style.opacity = '1';
+        state = captureMode === 'drag' ? S.DRAG_READY : S.HOVER;
         return;
       }
       showSel(r);
 
-    } else if (state === S.HOVER && potentialDrag) {
+    } else if (state === S.HOVER && potentialDrag && captureMode === 'click') {
       potentialDrag = false;
       if (!isOurs(e.target) && hoveredEl) {
         e.preventDefault(); e.stopPropagation();
         const el = hoveredEl;
         unhighlight();
-        if (tooltip) tooltip.style.opacity = '0';
         const br = el.getBoundingClientRect();
         selRect = { left: br.left, top: br.top, width: br.width, height: br.height };
         const cs = window.getComputedStyle(el);
         captureRadius = selCornerRadius > 0
           ? Math.max(parseFloat(cs.borderRadius) || 0, selCornerRadius)
           : 0;
-        doCapture().then(() => {
-          selRect = null;
-          if (tooltip) tooltip.style.opacity = '1';
-        });
+        doCapture().then(() => { selRect = null; });
+      } else {
+        potentialDrag = false;
       }
     }
   }
@@ -842,6 +784,7 @@
         chrome.runtime.sendMessage({ type: 'DEACTIVATE_GLOBAL' }).catch(() => {});
         deactivate();
       }
+      return;
     }
     if (e.key === 'Enter' && state === S.SELECTED) { e.preventDefault(); doSave(); }
     if (e.key === 'c' && (e.metaKey||e.ctrlKey) && state === S.SELECTED) { e.preventDefault(); doCapture(); }
@@ -852,11 +795,10 @@
   }
 
   /* ══════════════════════════════════
-     CAPTURE
+     CAPTURE — click mode (element)
   ══════════════════════════════════ */
   async function doCapture(fromToolbar = false) {
     if (!selRect) return;
-    // Hide all UI before screenshot
     if (selBox)    selBox.style.display   = 'none';
     if (toolbar)   toolbar.style.display  = 'none';
     if (annCanvas) annCanvas.style.visibility = 'hidden';
@@ -864,7 +806,6 @@
 
     await sleep(65);
 
-    // Wait for background to push SCREENSHOT_RESULT back
     const base64 = await new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('Screenshot timed out')), 8000);
       const handler = (msg) => {
@@ -886,22 +827,22 @@
       success = true;
     } catch (err) {
       toast('Failed: ' + err.message, true);
-      // Restore UI on failure so user can try again
       if (fromToolbar && selRect) {
-        posSelBox(selRect);
-        posHandles(selRect);
+        posSelBox(selRect); posHandles(selRect);
         if (toolbar)   toolbar.style.display = 'flex';
         if (annCanvas) annCanvas.style.visibility = 'visible';
       }
     }
 
-    // Deactivate globally after a successful capture
     if (success) {
       chrome.runtime.sendMessage({ type: 'DEACTIVATE_GLOBAL' }).catch(() => {});
       deactivate();
     }
   }
 
+  /* ══════════════════════════════════
+     SAVE — drag mode (to downloads)
+  ══════════════════════════════════ */
   async function doSave(fromToolbar = false) {
     if (!selRect) return;
     if (selBox)    selBox.style.display   = 'none';
@@ -952,6 +893,42 @@
     }
   }
 
+  /* ══════════════════════════════════
+     FULL SCREENSHOT — entire visible tab
+  ══════════════════════════════════ */
+  async function doFullCapture() {
+    await sleep(80);
+
+    try {
+      const base64 = await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('Screenshot timed out')), 8000);
+        const handler = (msg) => {
+          if (msg.type === 'SCREENSHOT_RESULT') {
+            clearTimeout(timer);
+            chrome.runtime.onMessage.removeListener(handler);
+            if (msg.error) reject(new Error(msg.error));
+            else resolve(msg.base64);
+          }
+        };
+        chrome.runtime.onMessage.addListener(handler);
+        chrome.runtime.sendMessage({ type: 'TAKE_SCREENSHOT' }).catch(reject);
+      });
+
+      const response = await fetch('data:image/png;base64,' + base64);
+      const blob = await response.blob();
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      toast('Full screenshot copied ✓');
+    } catch (err) {
+      toast('Failed: ' + err.message, true);
+    }
+
+    chrome.runtime.sendMessage({ type: 'DEACTIVATE_GLOBAL' }).catch(() => {});
+    deactivate();
+  }
+
+  /* ══════════════════════════════════
+     IMAGE HELPERS
+  ══════════════════════════════════ */
   async function mergeAndCopy(base64) {
     const blob = await mergeToBlob(base64);
     await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
@@ -994,8 +971,7 @@
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   /* ══════════════════════════════════
-     CLICK / NAVIGATION BLOCKER
-     Prevents links, buttons, forms from firing while capture is active.
+     CLICK BLOCKER
   ══════════════════════════════════ */
   function blockClick(e) {
     if (!window.__elementCaptureActive) return;
@@ -1007,12 +983,29 @@
   /* ══════════════════════════════════
      ACTIVATE / DEACTIVATE
   ══════════════════════════════════ */
-  function activate() {
-    if (window.__elementCaptureActive) return;
+  function activate(mode = 'click') {
+    captureMode = mode;
+
+    if (window.__elementCaptureActive) {
+      // Already active — switch mode
+      if (mode === 'full') { doFullCapture(); return; }
+      if (mode === 'drag') {
+        unhighlight(); clearSel();
+        state = S.DRAG_READY;
+        if (shield) shield.classList.add('drag-ready');
+        return;
+      }
+      // click mode: reset to hover
+      unhighlight(); clearSel();
+      state = S.HOVER;
+      if (shield) shield.classList.remove('drag-ready');
+      return;
+    }
+
     window.__elementCaptureActive = true;
     injectStyles();
     createShield();
-    createTooltip();
+
     document.addEventListener('mousedown', onMouseDown, true);
     document.addEventListener('mousemove', onMouseMove, true);
     document.addEventListener('mouseup',   onMouseUp,   true);
@@ -1022,13 +1015,24 @@
     document.addEventListener('dblclick',    blockClick, true);
     document.addEventListener('contextmenu', blockClick, true);
     document.addEventListener('submit',      blockClick, true);
-    chrome.runtime.sendMessage({ type: 'TAB_ACTIVATED' });
+
+    chrome.runtime.sendMessage({ type: 'TAB_ACTIVATED', mode });
+
+    if (mode === 'full') {
+      doFullCapture();
+    } else if (mode === 'drag') {
+      state = S.DRAG_READY;
+      if (shield) shield.classList.add('drag-ready');
+    } else {
+      state = S.HOVER;
+    }
   }
 
   function deactivate() {
     if (!window.__elementCaptureActive) return;
     window.__elementCaptureActive = false;
     state = S.HOVER;
+    captureMode = 'click';
     unhighlight(); clearSel(); hideOverlay();
     removeShield();
     document.removeEventListener('mousedown', onMouseDown, true);
@@ -1040,24 +1044,42 @@
     document.removeEventListener('dblclick',    blockClick, true);
     document.removeEventListener('contextmenu', blockClick, true);
     document.removeEventListener('submit',      blockClick, true);
-    if (tooltip) { tooltip.remove(); tooltip = null; }
     chrome.runtime.sendMessage({ type: 'TAB_DEACTIVATED' });
+  }
+
+  /* ══════════════════════════════════
+     TOAST
+  ══════════════════════════════════ */
+  function toast(msg, isError = false) {
+    const old = document.getElementById('__ec-toast');
+    if (old) old.remove();
+    const t = document.createElement('div');
+    t.id = '__ec-toast';
+    t.style.cssText = `background:${isError?'rgba(40,4,4,0.92)':'rgba(4,24,12,0.92)'};border:1px solid ${isError?'rgba(220,38,38,0.5)':'rgba(0,200,100,0.4)'};color:${isError?'#f87171':'#4ade80'};opacity:0;transform:translateY(8px);font-family:-apple-system,BlinkMacSystemFont,sans-serif;`;
+    t.textContent = msg;
+    document.documentElement.appendChild(t);
+    requestAnimationFrame(() => { t.style.opacity='1'; t.style.transform='translateY(0)'; });
+    setTimeout(() => { t.style.opacity='0'; t.style.transform='translateY(8px)'; setTimeout(()=>t.remove(),280); }, 2600);
   }
 
   /* ══════════════════════════════════
      MESSAGES
   ══════════════════════════════════ */
   chrome.runtime.onMessage.addListener((msg, _s, sendResponse) => {
-    if (msg.type === 'ACTIVATE')   { activate();   try { sendResponse({ok:true}); } catch(_) {} return false; }
-    if (msg.type === 'DEACTIVATE') { deactivate(); try { sendResponse({ok:true}); } catch(_) {} return false; }
+    if (msg.type === 'ACTIVATE_MODE') {
+      activate(msg.mode || 'click');
+      try { sendResponse({ ok: true }); } catch(_) {}
+      return false;
+    }
+    if (msg.type === 'DEACTIVATE') {
+      deactivate();
+      try { sendResponse({ ok: true }); } catch(_) {}
+      return false;
+    }
   });
 
   /* ══════════════════════════════════
-     BACK/FORWARD CACHE (bfcache)
-     When Chrome caches a page, message ports close.
-     Deactivate cleanly on pagehide so there are no
-     dangling listeners. Re-activate on pageshow if
-     global mode is still on.
+     BFCACHE
   ══════════════════════════════════ */
   window.addEventListener('pagehide', (e) => {
     if (e.persisted) {
@@ -1074,33 +1096,16 @@
       document.removeEventListener('dblclick',    blockClick, true);
       document.removeEventListener('contextmenu', blockClick, true);
       document.removeEventListener('submit',      blockClick, true);
-      if (tooltip) { tooltip.remove(); tooltip = null; }
     }
   });
 
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) {
-      // Page restored from bfcache — check if we should still be active.
       chrome.runtime.sendMessage({ type: 'GET_STATE' }, (res) => {
         if (chrome.runtime.lastError) return;
-        if (res && res.active) activate();
+        if (res && res.active) activate(res.mode || 'click');
       });
     }
   });
-
-  /* ══════════════════════════════════
-     TOAST
-  ══════════════════════════════════ */
-  function toast(msg, isError=false) {
-    const old = document.getElementById('__ec-toast');
-    if (old) old.remove();
-    const t = document.createElement('div');
-    t.id = '__ec-toast';
-    t.style.cssText = `background:${isError?'rgba(40,4,4,0.92)':'rgba(4,24,12,0.92)'};border:1px solid ${isError?'rgba(220,38,38,0.5)':'rgba(0,200,100,0.4)'};color:${isError?'#f87171':'#4ade80'};opacity:0;transform:translateY(8px);font-family:-apple-system,BlinkMacSystemFont,sans-serif;`;
-    t.textContent = msg;
-    document.documentElement.appendChild(t);
-    requestAnimationFrame(() => { t.style.opacity='1'; t.style.transform='translateY(0)'; });
-    setTimeout(() => { t.style.opacity='0'; t.style.transform='translateY(8px)'; setTimeout(()=>t.remove(),280); }, 2600);
-  }
 
 })();
