@@ -7,28 +7,21 @@ const btnFull   = document.getElementById('btn-full');
 const keysClick = document.getElementById('keys-click');
 const keysDrag  = document.getElementById('keys-drag');
 const keysFull  = document.getElementById('keys-full');
-const customizeBtn = document.getElementById('customizeBtn');
 
-/* ── Render keyboard shortcut keys ── */
-function renderKeys(container, shortcut) {
-  if (!shortcut) {
-    container.innerHTML = '<span class="key unset">Not set</span>';
-    return;
-  }
-  const parts = shortcut.split('+');
-  container.innerHTML = parts
+/* ── Hardcoded shortcuts ── */
+const isMac = navigator.platform.toUpperCase().includes('MAC');
+const MOD   = isMac ? '⌘' : 'Ctrl';
+const SHIFT = '⇧';
+
+function renderKeys(container, num) {
+  container.innerHTML = [MOD, SHIFT, num]
     .map(k => `<span class="key">${k}</span>`)
     .join('');
 }
 
-/* ── Load all shortcuts ── */
-chrome.commands.getAll((commands) => {
-  const map = {};
-  commands.forEach(c => { map[c.name] = c.shortcut || ''; });
-  renderKeys(keysClick, map['capture-click'] || '');
-  renderKeys(keysDrag,  map['capture-drag']  || '');
-  renderKeys(keysFull,  map['capture-full']  || '');
-});
+renderKeys(keysClick, '1');
+renderKeys(keysDrag,  '2');
+renderKeys(keysFull,  '3');
 
 /* ── Mark active mode ── */
 function setActiveRow(mode) {
@@ -81,7 +74,3 @@ rowClick.addEventListener('click', (e) => { if (!e.target.closest('.mode-btn')) 
 rowDrag.addEventListener('click',  (e) => { if (!e.target.closest('.mode-btn')) activate('ACTIVATE_DRAG');  });
 rowFull.addEventListener('click',  (e) => { if (!e.target.closest('.mode-btn')) activate('ACTIVATE_FULL');  });
 
-/* ── Customize shortcuts ── */
-customizeBtn.addEventListener('click', () => {
-  chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-});
