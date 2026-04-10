@@ -405,35 +405,16 @@ function CaptureDemo() {
 export function Showcase() {
   return (
     <section id="showcase" className="w-full px-6 md:px-8 py-24 md:py-36 flex flex-col items-center">
-      <motion.h2
+      <motion.p
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         style={{
           fontFamily: "Arial, sans-serif",
-          fontSize: "52px",
+          fontSize: "17px",
           fontWeight: 700,
           color: "#ffffff",
-          textAlign: "center",
-          marginBottom: "16px",
-          lineHeight: 1.1,
-          letterSpacing: "-0.02em",
-        }}
-      >
-        Hover. Click. Done.
-      </motion.h2>
-
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.05 }}
-        style={{
-          fontFamily: "Arial, sans-serif",
-          fontSize: "17px",
-          fontWeight: 400,
-          color: "rgba(255,255,255,0.45)",
           textAlign: "center",
           marginBottom: "56px",
           lineHeight: 1.6,
