@@ -279,7 +279,7 @@
     // Capture
     const cap = mkBtn('Copy', 'Copy to clipboard');
     cap.className += ' ec-cap';
-    cap.addEventListener('click', e => { e.stopPropagation(); doCapture(); });
+    cap.addEventListener('click', e => { e.stopPropagation(); doCapture(true); });
     toolbar.appendChild(cap);
 
     sep();
@@ -548,8 +548,16 @@
       potentialDrag = false;
       if (!isOurs(e.target) && hoveredEl) {
         e.preventDefault(); e.stopPropagation();
-        const br = hoveredEl.getBoundingClientRect();
-        showSel({ left:br.left, top:br.top, width:br.width, height:br.height });
+        // Click on element → immediate capture (no toolbar)
+        const el = hoveredEl;
+        unhighlight();
+        if (tooltip) tooltip.style.opacity = '0';
+        const br = el.getBoundingClientRect();
+        selRect = { left: br.left, top: br.top, width: br.width, height: br.height };
+        doCapture().then(() => {
+          selRect = null;
+          if (tooltip) tooltip.style.opacity = '1';
+        });
       }
     }
   }
@@ -572,7 +580,7 @@
   /* ══════════════════════════════════
      CAPTURE
   ══════════════════════════════════ */
-  async function doCapture() {
+  async function doCapture(fromToolbar = false) {
     if (!selRect) return;
     // Hide all UI before screenshot
     if (selBox)    selBox.style.display   = 'none';
@@ -604,10 +612,13 @@
       toast('Failed: ' + err.message, true);
     }
 
-    // Restore UI
-    if (selRect) { posSelBox(selRect); posHandles(selRect); }
-    if (toolbar)   toolbar.style.display = 'flex';
-    if (annCanvas) annCanvas.style.visibility = 'visible';
+    // Restore toolbar UI only if capture was triggered from the toolbar
+    if (fromToolbar && selRect) {
+      posSelBox(selRect);
+      posHandles(selRect);
+      if (toolbar)   toolbar.style.display = 'flex';
+      if (annCanvas) annCanvas.style.visibility = 'visible';
+    }
   }
 
   async function mergeAndCopy(base64) {
