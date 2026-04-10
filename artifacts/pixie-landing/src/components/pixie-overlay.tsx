@@ -48,74 +48,104 @@ function findTarget(x: number, y: number): Element | null {
   return found;
 }
 
-function getOutline(el: Element): { pad: number; radius: string } {
+function getOutline(el: Element): { pad: number; radius: number } {
   const tag = el.tagName.toLowerCase();
-  let br = '4px';
-  try { br = window.getComputedStyle(el).borderRadius || '4px'; } catch {}
-  if (br === '0px') br = '4px';
+  let br = 4;
+  try { br = parseFloat(window.getComputedStyle(el).borderRadius) || 4; } catch {}
+  if (br === 0) br = 4;
   if ((el as HTMLElement).dataset?.pixieCard) return { pad: 3, radius: br };
   if (['a', 'button'].includes(tag)) return { pad: 1, radius: br };
-  if (['h1', 'h2', 'h3'].includes(tag)) return { pad: 3, radius: '8px' };
-  if (tag === 'p') return { pad: 2, radius: '6px' };
+  if (['h1', 'h2', 'h3'].includes(tag)) return { pad: 3, radius: 8 };
+  if (tag === 'p') return { pad: 2, radius: 6 };
   if (tag === 'img') return { pad: 1, radius: br };
   return { pad: 2, radius: br };
 }
 
-async function captureElement(target: Element): Promise<void> {
-  const raw = await html2canvas(target as HTMLElement, {
-    scale: 2,
-    useCORS: true,
-    logging: false,
-    backgroundColor: null,
-  });
-
-  // Apply rounded corners matching the element's computed border-radius
-  const br = parseFloat(window.getComputedStyle(target as HTMLElement).borderRadius) || 0;
-  const r = br * 2; // scaled at 2x
-
-  const out = document.createElement('canvas');
-  out.width = raw.width;
-  out.height = raw.height;
-  const ctx = out.getContext('2d');
-  if (!ctx) return;
-
-  if (r > 0) {
-    const w = raw.width, h = raw.height;
-    ctx.beginPath();
-    ctx.moveTo(r, 0);
-    ctx.lineTo(w - r, 0);
-    ctx.quadraticCurveTo(w, 0, w, r);
-    ctx.lineTo(w, h - r);
-    ctx.quadraticCurveTo(w, h, w - r, h);
-    ctx.lineTo(r, h);
-    ctx.quadraticCurveTo(0, h, 0, h - r);
-    ctx.lineTo(0, r);
-    ctx.quadraticCurveTo(0, 0, r, 0);
-    ctx.closePath();
-    ctx.clip();
-  }
-
-  ctx.drawImage(raw, 0, 0);
-
-  await new Promise<void>((resolve) => {
-    out.toBlob(async (blob) => {
-      if (!blob) { resolve(); return; }
-      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      resolve();
-    }, 'image/png');
-  });
+interface BoxInfo {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  radius: number;
 }
 
+async function captureRegion(box: BoxInfo, overlayId: string): Promise<void> {
+  const overlay = document.getElementById(overlayId);
+  if (overlay) overlay.style.display = 'none';
+
+  const scale = 2;
+  const sx = window.scrollX;
+  const sy = window.scrollY;
+
+  try {
+    const raw = await html2canvas(document.body, {
+      scale,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      x: box.x + sx,
+      y: box.y + sy,
+      width: box.w,
+      height: box.h,
+      scrollX: -sx,
+      scrollY: -sy,
+      windowWidth: document.documentElement.clientWidth,
+      windowHeight: document.documentElement.clientHeight,
+    });
+
+    const r = box.radius * scale;
+    const cw = raw.width;
+    const ch = raw.height;
+
+    const out = document.createElement('canvas');
+    out.width = cw;
+    out.height = ch;
+    const ctx = out.getContext('2d');
+    if (!ctx) return;
+
+    if (r > 0) {
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(cw - r, 0);
+      ctx.quadraticCurveTo(cw, 0, cw, r);
+      ctx.lineTo(cw, ch - r);
+      ctx.quadraticCurveTo(cw, ch, cw - r, ch);
+      ctx.lineTo(r, ch);
+      ctx.quadraticCurveTo(0, ch, 0, ch - r);
+      ctx.lineTo(0, r);
+      ctx.quadraticCurveTo(0, 0, r, 0);
+      ctx.closePath();
+      ctx.clip();
+    }
+
+    ctx.drawImage(raw, 0, 0);
+
+    await new Promise<void>((resolve) => {
+      out.toBlob(async (blob) => {
+        if (!blob) { resolve(); return; }
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        } catch {}
+        resolve();
+      }, 'image/png');
+    });
+  } finally {
+    if (overlay) overlay.style.display = '';
+  }
+}
+
+const OVERLAY_ID = 'pixie-global-overlay';
+
 export function PixieGlobalOverlay() {
-  const [box, setBox] = useState<{ x: number; y: number; w: number; h: number; radius: string } | null>(null);
+  const [box, setBox] = useState<BoxInfo | null>(null);
   const [mouse, setMouse] = useState<{ x: number; y: number } | null>(null);
   const [inDemo, setInDemo] = useState(false);
   const [status, setStatus] = useState<'idle' | 'capturing' | 'copied'>('idle');
   const targetRef = useRef<Element | null>(null);
+  const boxRef = useRef<BoxInfo | null>(null);
   const copiedTimer = useRef<ReturnType<typeof setTimeout>>();
   const rafRef = useRef<number>(0);
 
-  // Force default cursor across the whole page
   useEffect(() => {
     const style = document.createElement('style');
     style.id = 'pixie-cursor-override';
@@ -136,21 +166,25 @@ export function PixieGlobalOverlay() {
         if (target) {
           const r2 = target.getBoundingClientRect();
           const { pad, radius } = getOutline(target);
-          setBox({ x: r2.left - pad, y: r2.top - pad, w: r2.width + pad * 2, h: r2.height + pad * 2, radius });
+          const b: BoxInfo = { x: r2.left - pad, y: r2.top - pad, w: r2.width + pad * 2, h: r2.height + pad * 2, radius };
+          setBox(b);
+          boxRef.current = b;
         } else {
           setBox(null);
+          boxRef.current = null;
         }
       });
     }
 
     async function onClick(e: MouseEvent) {
       const target = targetRef.current;
-      if (!target || isInDemoArea(target)) return;
+      const currentBox = boxRef.current;
+      if (!target || !currentBox || isInDemoArea(target)) return;
       e.preventDefault();
       e.stopPropagation();
       setStatus('capturing');
       try {
-        await captureElement(target);
+        await captureRegion(currentBox, OVERLAY_ID);
         setStatus('copied');
         clearTimeout(copiedTimer.current);
         copiedTimer.current = setTimeout(() => setStatus('idle'), 2200);
@@ -160,7 +194,7 @@ export function PixieGlobalOverlay() {
     }
 
     document.addEventListener('mousemove', onMove, { passive: true });
-    document.addEventListener('mouseleave', () => { setBox(null); setMouse(null); });
+    document.addEventListener('mouseleave', () => { setBox(null); setMouse(null); boxRef.current = null; });
     document.addEventListener('click', onClick, { capture: true });
     return () => {
       document.removeEventListener('mousemove', onMove);
@@ -173,7 +207,7 @@ export function PixieGlobalOverlay() {
   const labelText = status === 'copied' ? 'Copied!' : status === 'capturing' ? 'Capturing…' : 'Click to capture';
 
   return (
-    <>
+    <div id={OVERLAY_ID} style={{ pointerEvents: 'none' }}>
       {box && (
         <div style={{
           position: 'fixed',
@@ -182,7 +216,7 @@ export function PixieGlobalOverlay() {
           width: box.w,
           height: box.h,
           border: '2px solid #34D399',
-          borderRadius: box.radius,
+          borderRadius: `${box.radius}px`,
           background: status === 'copied' ? 'rgba(52,211,153,0.09)' : 'rgba(52,211,153,0.04)',
           pointerEvents: 'none',
           zIndex: 99999,
@@ -198,7 +232,6 @@ export function PixieGlobalOverlay() {
           padding: '5px 10px',
           display: 'flex',
           alignItems: 'center',
-          gap: '0',
           pointerEvents: 'none',
           zIndex: 100000,
           whiteSpace: 'nowrap',
@@ -209,6 +242,6 @@ export function PixieGlobalOverlay() {
           </span>
         </div>
       )}
-    </>
+    </div>
   );
 }
