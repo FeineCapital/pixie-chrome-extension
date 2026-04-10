@@ -90,9 +90,9 @@ function FakeWebsite({ step }: { step: number }) {
             }}
             animate={{
               boxShadow: isCaptured
-                ? "0 0 0 3px rgba(52,211,153,0.9), 0 0 24px rgba(52,211,153,0.3)"
+                ? "0 0 0 2px #34D399"
                 : isHovered
-                ? "0 0 0 3px rgba(52,211,153,0.7), 0 0 20px rgba(52,211,153,0.2)"
+                ? "0 0 0 2px #34D399"
                 : "0 0 0 1px #f0f0f0",
             }}
             transition={{ duration: 0.3 }}
