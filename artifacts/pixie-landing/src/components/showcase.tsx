@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import cityPhoto from "@assets/image_1775821327906.png";
 
 function BrowserChrome({ url, children }: { url: string; children: React.ReactNode }) {
   return (
@@ -203,76 +204,6 @@ function StripeDashboard() {
   );
 }
 
-// ─── City SVG image ────────────────────────────────────────────────────────────
-
-function CityPhoto({ style }: { style?: React.CSSProperties }) {
-  return (
-    <svg width="100%" height="100%" viewBox="0 0 480 200" preserveAspectRatio="xMidYMid slice" style={style}>
-      <defs>
-        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1a1035"/>
-          <stop offset="40%" stopColor="#3d2b6e"/>
-          <stop offset="70%" stopColor="#c05c2e"/>
-          <stop offset="100%" stopColor="#e88c3a"/>
-        </linearGradient>
-        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1a2a4a"/>
-          <stop offset="100%" stopColor="#0d1520"/>
-        </linearGradient>
-        <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
-          <stop offset="0%" stopColor="#e88c3a" stopOpacity="0.5"/>
-          <stop offset="100%" stopColor="#e88c3a" stopOpacity="0"/>
-        </linearGradient>
-      </defs>
-      {/* Sky */}
-      <rect width="480" height="200" fill="url(#sky)"/>
-      {/* Horizon glow */}
-      <ellipse cx="240" cy="130" rx="200" ry="40" fill="url(#glow)"/>
-      {/* Far buildings */}
-      <rect x="0" y="105" width="18" height="35" fill="#1a0e2e" opacity="0.6"/>
-      <rect x="20" y="90" width="22" height="50" fill="#1d1030" opacity="0.65"/>
-      <rect x="44" y="100" width="14" height="40" fill="#1a0e2e" opacity="0.6"/>
-      <rect x="60" y="80" width="26" height="60" fill="#1d1030" opacity="0.7"/>
-      <rect x="88" y="70" width="20" height="70" fill="#22122e" opacity="0.75"/>
-      <rect x="110" y="85" width="16" height="55" fill="#1d1030" opacity="0.6"/>
-      <rect x="128" y="60" width="30" height="80" fill="#251535" opacity="0.8"/>
-      <rect x="160" y="75" width="20" height="65" fill="#1d1030" opacity="0.65"/>
-      <rect x="182" y="55" width="36" height="85" fill="#2a1838" opacity="0.85"/>
-      <rect x="220" y="80" width="18" height="60" fill="#1d1030" opacity="0.6"/>
-      <rect x="240" y="65" width="28" height="75" fill="#22122e" opacity="0.75"/>
-      <rect x="270" y="90" width="16" height="50" fill="#1d1030" opacity="0.6"/>
-      <rect x="288" y="50" width="32" height="90" fill="#2a1838" opacity="0.85"/>
-      <rect x="322" y="78" width="20" height="62" fill="#1d1030" opacity="0.65"/>
-      <rect x="344" y="88" width="18" height="52" fill="#22122e" opacity="0.6"/>
-      <rect x="364" y="68" width="24" height="72" fill="#1d1030" opacity="0.7"/>
-      <rect x="390" y="82" width="20" height="58" fill="#22122e" opacity="0.65"/>
-      <rect x="412" y="58" width="30" height="82" fill="#2a1838" opacity="0.8"/>
-      <rect x="444" y="92" width="16" height="48" fill="#1d1030" opacity="0.6"/>
-      <rect x="462" y="75" width="18" height="65" fill="#22122e" opacity="0.7"/>
-      {/* Building windows */}
-      {[130,134,138,142,182,186,190,194,198,290,294,298,302,414,418,422,426].map((x, i) => (
-        <rect key={i} x={x} y={[68,75,82,89,62,69,76,83,90,58,65,72,79,66,73,80,87][i]} width="4" height="3" fill="#f5c842" opacity="0.7"/>
-      ))}
-      {/* Water */}
-      <rect x="0" y="140" width="480" height="60" fill="url(#water)"/>
-      {/* Water reflections */}
-      <rect x="20" y="143" width="440" height="1" fill="#c05c2e" opacity="0.25"/>
-      <rect x="40" y="148" width="400" height="1" fill="#c05c2e" opacity="0.15"/>
-      <rect x="60" y="154" width="360" height="1" fill="#3d2b6e" opacity="0.15"/>
-      {[60,110,170,220,280,340,390].map((x, i) => (
-        <rect key={i} x={x} y={142 + i * 2} width={20 + i * 4} height="2" fill="#f5c842" opacity="0.08"/>
-      ))}
-      {/* Moon */}
-      <circle cx="390" cy="32" r="14" fill="#ffe8b0" opacity="0.9"/>
-      <circle cx="395" cy="28" r="11" fill="#3d2b6e" opacity="0.5"/>
-      {/* Stars */}
-      {[[40,18],[80,12],[140,22],[200,8],[260,15],[320,10],[450,20],[30,40],[420,35]].map(([x,y],i) => (
-        <circle key={i} cx={x} cy={y} r="1" fill="#fff" opacity="0.7"/>
-      ))}
-    </svg>
-  );
-}
-
 // ─── 2. Drag to select — News article ─────────────────────────────────────────
 
 function NewsArticle() {
@@ -299,10 +230,10 @@ function NewsArticle() {
 
   // Image occupies roughly x:16px–end, y:80px–200px inside the 380px container
   // Expressed as % of container (container ~680px wide, 380px tall)
-  const imgTop = "21%";    // ~80/380
-  const imgLeft = "3.5%";  // 24/680
+  const imgTop = "31%";
+  const imgLeft = "3.5%";
   const imgRight = "96.5%";
-  const imgBottom = "55%"; // ~210/380
+  const imgBottom = "65%";
 
   const cursorPositions: Record<number, { x: string; y: string }> = {
     0: { x: "82%", y: "8%" },
@@ -336,12 +267,12 @@ function NewsArticle() {
 
         {/* City photo */}
         <div style={{ width: "100%", height: "130px", borderRadius: "6px", overflow: "hidden", marginBottom: "10px" }}>
-          <CityPhoto />
+          <img src={cityPhoto} alt="Chongqing city skyline at night" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         </div>
 
         {/* Caption */}
         <div style={{ fontSize: "7.5px", color: "#999", marginBottom: "8px", fontStyle: "italic" }}>
-          The city skyline at dusk, captured from the riverside promenade.
+          Chongqing's illuminated skyline and Qiansimen Bridge reflected in the Jialing River.
         </div>
 
         {/* Body text */}
