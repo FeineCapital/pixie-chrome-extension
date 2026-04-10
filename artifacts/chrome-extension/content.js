@@ -37,8 +37,9 @@
     s.id = '__ec_styles';
     s.textContent = `
       .__ec-hl {
-        outline: 1.5px solid #00e676 !important;
-        outline-offset: 2px !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px #00e676, 0 0 8px rgba(0,230,118,0.25) !important;
+        border-radius: inherit !important;
       }
       #__ec-ov {
         position: fixed !important; pointer-events: none !important;
@@ -122,11 +123,12 @@
       #__ec-tb button.ec-act { background: rgba(0,230,118,0.14) !important; color: #00e676 !important; }
       #__ec-tb .ec-sep { width: 1px !important; height: 18px !important; background: rgba(255,255,255,0.09) !important; margin: 0 2px !important; flex-shrink: 0 !important; }
       #__ec-tb .ec-col {
-        width: 12px !important; height: 12px !important; border-radius: 50% !important;
+        width: 15px !important; height: 15px !important; border-radius: 50% !important;
         padding: 0 !important; cursor: pointer !important; border: 2px solid transparent !important;
         transition: border-color 0.12s, transform 0.12s !important; flex-shrink: 0 !important;
       }
-      #__ec-tb .ec-col.ec-act { border-color: rgba(255,255,255,0.75) !important; transform: scale(1.25) !important; }
+      #__ec-tb .ec-col:hover { transform: scale(1.2) !important; }
+      #__ec-tb .ec-col.ec-act { border-color: rgba(255,255,255,0.8) !important; transform: scale(1.3) !important; }
       #__ec-tb .ec-cap {
         background: linear-gradient(135deg,#065f46,#059669,#10b981) !important;
         color: #fff !important; font-size: 11px !important; font-weight: 600 !important;
@@ -347,15 +349,19 @@
       return b;
     }
 
-    // Pencil
-    const penBtn = mkBtn('✏', 'Pencil');
+    // Pencil (SVG — tip points bottom-left)
+    const penBtn = document.createElement('button');
+    penBtn.title = 'Pencil';
+    penBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
     penBtn.dataset.tool = 'pen';
     penBtn.classList.add('ec-act');
     penBtn.addEventListener('click', e => { e.stopPropagation(); setTool('pen'); });
     toolbar.appendChild(penBtn);
 
-    // Eraser
-    const erBtn = mkBtn('⌫', 'Eraser');
+    // Eraser (SVG icon)
+    const erBtn = document.createElement('button');
+    erBtn.title = 'Eraser';
+    erBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>';
     erBtn.dataset.tool = 'eraser';
     erBtn.addEventListener('click', e => { e.stopPropagation(); setTool('eraser'); });
     toolbar.appendChild(erBtn);
@@ -369,7 +375,7 @@
       dot.style.background = c;
       dot.dataset.color = c;
       dot.title = c;
-      dot.addEventListener('click', e => { e.stopPropagation(); setColor(c); });
+      dot.addEventListener('click', e => { e.stopPropagation(); setColor(c); setTool('pen'); });
       toolbar.appendChild(dot);
     }
 
@@ -525,36 +531,53 @@
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   }
 
+  let lastMid = null;
+
   function onAnnDown(e) {
     if (e.button !== 0) return;
     e.preventDefault(); e.stopPropagation();
     isDrawing = true;
     drawOrigin = canPos(e);
+    lastMid = null;
     savePx();
-    annCtx.beginPath();
-    annCtx.moveTo(drawOrigin.x, drawOrigin.y);
   }
 
   function onAnnMove(e) {
     if (!isDrawing) return;
     e.preventDefault();
     const p = canPos(e);
+
     if (activeTool === 'pen') {
       annCtx.globalCompositeOperation = 'source-over';
-      annCtx.strokeStyle = activeColor; annCtx.lineWidth = 2.5;
-      annCtx.lineTo(p.x, p.y); annCtx.stroke();
-    } else if (activeTool === 'eraser') {
+      annCtx.strokeStyle = activeColor;
+      annCtx.lineWidth = 2.5;
+    } else {
       annCtx.globalCompositeOperation = 'destination-out';
       annCtx.lineWidth = 18;
-      annCtx.lineTo(p.x, p.y); annCtx.stroke();
-      annCtx.globalCompositeOperation = 'source-over';
     }
+
+    const mid = { x: (drawOrigin.x + p.x) / 2, y: (drawOrigin.y + p.y) / 2 };
+    annCtx.beginPath();
+    if (lastMid) {
+      annCtx.moveTo(lastMid.x, lastMid.y);
+      annCtx.quadraticCurveTo(drawOrigin.x, drawOrigin.y, mid.x, mid.y);
+    } else {
+      annCtx.moveTo(drawOrigin.x, drawOrigin.y);
+      annCtx.lineTo(mid.x, mid.y);
+    }
+    annCtx.stroke();
+
+    lastMid = mid;
+    drawOrigin = p;
+
+    if (activeTool === 'eraser') annCtx.globalCompositeOperation = 'source-over';
   }
 
   function onAnnUp(e) {
     if (!isDrawing) return;
     e.preventDefault(); e.stopPropagation();
     isDrawing = false;
+    lastMid = null;
     annCtx.globalCompositeOperation = 'source-over';
     savePx();
     drawOrigin = null;
