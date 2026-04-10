@@ -725,14 +725,8 @@
     if (!window.__elementCaptureActive) return;
 
     if (state === S.HOVER && captureMode === 'click') {
-      if (potentialDrag) {
-        const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
-        if (Math.sqrt(dx*dx+dy*dy) > 5) {
-          state = S.DRAG;
-          unhighlight();
-          ensureSelBox();
-        }
-      } else {
+      // Click mode: just update hover highlight — never enter drag from click mode
+      if (!potentialDrag) {
         const raw = elementUnderCursor(e.clientX, e.clientY);
         if (raw && !isOurs(raw)) highlight(findBestTarget(raw));
       }
