@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import pixieLogo from "@assets/image_1775816868243.png";
+import pixieLogo from "@assets/image_1775817701275.png";
 
 export function Nav() {
   return (
