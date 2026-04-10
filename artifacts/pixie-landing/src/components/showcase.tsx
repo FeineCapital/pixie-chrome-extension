@@ -29,7 +29,7 @@ function BrowserChrome({ url, children }: { url: string; children: React.ReactNo
           <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.35)", fontFamily: "Arial, sans-serif" }}>{url}</span>
         </div>
       </div>
-      <div style={{ position: "relative", height: "380px", overflow: "hidden", background: "#fff" }}>
+      <div className="pixie-demo-area" style={{ position: "relative", height: "380px", overflow: "hidden", background: "#fff" }}>
         {children}
       </div>
     </div>
@@ -587,6 +587,7 @@ export function Showcase() {
         {modes.map((mode, i) => (
           <motion.div
             key={mode.title}
+            data-pixie-card="true"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
