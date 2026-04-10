@@ -1018,10 +1018,10 @@
     } else if (mode === 'drag') {
       state = S.DRAG_READY;
       if (shield) shield.classList.add('drag-ready');
-      showModeHint('Click to drag — draw a rectangle');
+      showModeHint('Click to drag');
     } else {
       state = S.HOVER;
-      showModeHint('Click to capture — hover an element, then click');
+      showModeHint('Click to capture');
     }
   }
 
