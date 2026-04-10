@@ -17,11 +17,9 @@ export function Hero() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-[2.75rem] leading-[1] sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-display font-bold md:leading-[0.9] text-balance mb-6 md:mb-8 text-foreground"
+          className="text-[2.5rem] leading-[1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold md:leading-[1] mb-6 md:mb-8 text-foreground"
         >
-          Screenshot anything,
-          <br className="hidden sm:block" />
-          instantly.
+          The screenshot tool you deserve.
         </motion.h1>
 
         <motion.p 
