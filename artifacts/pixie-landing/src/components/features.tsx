@@ -34,8 +34,8 @@ const features = [
 ];
 
 const shortcuts = [
-  { keys: ["⌘", "⇧", "6"], label: "Area capture" },
-  { keys: ["⌘", "⇧", "7"], label: "Full screen capture" },
+  { keys: ["⌘", "⇧", "7"], label: "Click & capture" },
+  { keys: ["⌘", "⇧", "8"], label: "Full screen capture" },
   { keys: ["⌘", "C"], label: "Copy to clipboard" },
   { keys: ["↵"], label: "Save to Desktop" },
 ];

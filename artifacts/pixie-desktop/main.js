@@ -78,7 +78,7 @@ function createTray() {
   const icon = nativeImage.createEmpty();
   tray = new Tray(icon);
   tray.setTitle('Pixie');
-  tray.setToolTip('Pixie — ⌘⇧6 capture area  •  ⌘⇧7 full screen');
+  tray.setToolTip('Pixie — ⌘⇧7 click & capture  •  ⌘⇧8 full screen');
 
   updateTrayMenu();
 }
@@ -87,11 +87,11 @@ function updateTrayMenu() {
   const menu = Menu.buildFromTemplate([
     { label: 'Pixie', enabled: false },
     { type: 'separator' },
-    { label: 'Capture Area       ⌘⇧6', click: () => activateCapture() },
-    { label: 'Full Screen         ⌘⇧7', click: () => captureFullScreen() },
+    { label: 'Click & Capture    ⌘⇧7', click: () => activateCapture() },
+    { label: 'Full Screen         ⌘⇧8', click: () => captureFullScreen() },
     { type: 'separator' },
     { label: 'How to use:', enabled: false },
-    { label: '  1. Press ⌘⇧6 to start area select', enabled: false },
+    { label: '  1. Press ⌘⇧7 to start click & capture', enabled: false },
     { label: '  2. Drag to select any region', enabled: false },
     { label: '  3. Press ⌘C to copy, Enter to save', enabled: false },
     { label: '  4. Press Esc to cancel', enabled: false },
@@ -198,7 +198,7 @@ function showWelcomeNotification() {
   if (Notification.isSupported()) {
     new Notification({
       title: 'Pixie is running',
-      body: '⌘⇧6 = capture area  •  ⌘⇧7 = full screen\nClick the Pixie icon in your menu bar anytime.',
+      body: '⌘⇧7 = click & capture  •  ⌘⇧8 = full screen\nClick the Pixie icon in your menu bar anytime.',
     }).show();
   }
 }
@@ -216,8 +216,8 @@ app.whenReady().then(() => {
     if (capturing) deactivateCapture();
   });
 
-  globalShortcut.register('CommandOrControl+Shift+6', () => activateCapture());
-  globalShortcut.register('CommandOrControl+Shift+7', () => captureFullScreen());
+  globalShortcut.register('CommandOrControl+Shift+7', () => activateCapture());
+  globalShortcut.register('CommandOrControl+Shift+8', () => captureFullScreen());
 
   showWelcomeNotification();
 });
