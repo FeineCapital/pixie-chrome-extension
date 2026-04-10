@@ -90,48 +90,47 @@
       }
       #__ec-tb {
         position: fixed !important; z-index: 2147483644 !important; display: none;
-        align-items: center !important; gap: 3px !important;
-        background: rgba(10,11,22,0.96) !important;
-        border: 1px solid rgba(0,230,118,0.2) !important;
-        border-radius: 10px !important; padding: 5px 7px !important;
-        box-shadow: 0 6px 28px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04) !important;
-        backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif !important;
+        align-items: center !important; gap: 6px !important;
+        background: #171717 !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 14px !important; padding: 8px 10px !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04) !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif !important;
         white-space: nowrap !important; user-select: none !important;
       }
       #__ec-tb button {
         border: none !important; cursor: pointer !important;
         font-family: inherit !important; line-height: 1 !important;
-        padding: 5px 7px !important; border-radius: 6px !important;
+        padding: 8px 9px !important; border-radius: 8px !important;
         background: transparent !important; color: rgba(255,255,255,0.45) !important;
-        font-size: 13px !important; transition: background 0.12s, color 0.12s !important;
+        font-size: 14px !important; transition: background 0.12s, color 0.12s !important;
         display: flex !important; align-items: center !important; justify-content: center !important;
       }
       #__ec-tb button:hover { background: rgba(255,255,255,0.08) !important; color: rgba(255,255,255,0.9) !important; }
-      #__ec-tb button.ec-act { background: rgba(0,230,118,0.14) !important; color: #00e676 !important; }
-      #__ec-tb .ec-sep { width: 1px !important; height: 18px !important; background: rgba(255,255,255,0.09) !important; margin: 0 2px !important; flex-shrink: 0 !important; }
+      #__ec-tb button.ec-act { background: rgba(0,230,118,0.12) !important; color: #00e676 !important; }
+      #__ec-tb .ec-sep { width: 1px !important; height: 22px !important; background: rgba(255,255,255,0.08) !important; margin: 0 2px !important; flex-shrink: 0 !important; }
       #__ec-tb .ec-col {
-        width: 15px !important; height: 15px !important; border-radius: 50% !important;
+        width: 18px !important; height: 18px !important; border-radius: 50% !important;
         padding: 0 !important; cursor: pointer !important; border: 2px solid transparent !important;
         transition: border-color 0.12s, transform 0.12s !important; flex-shrink: 0 !important;
       }
-      #__ec-tb .ec-col:hover { transform: scale(1.2) !important; }
-      #__ec-tb .ec-col.ec-act { border-color: rgba(255,255,255,0.8) !important; transform: scale(1.3) !important; }
+      #__ec-tb .ec-col:hover { transform: scale(1.15) !important; }
+      #__ec-tb .ec-col.ec-act { border-color: rgba(255,255,255,0.8) !important; transform: scale(1.25) !important; }
       #__ec-tb .ec-cap {
-        background: linear-gradient(135deg,#065f46,#059669,#10b981) !important;
-        color: #fff !important; font-size: 11px !important; font-weight: 600 !important;
-        padding: 5px 11px !important; border-radius: 6px !important;
-        box-shadow: 0 0 10px rgba(16,185,129,0.3) !important; letter-spacing: 0.01em !important;
+        background: rgba(0,230,118,0.12) !important;
+        color: #00e676 !important; font-size: 13px !important; font-weight: 600 !important;
+        padding: 8px 16px !important; border-radius: 8px !important;
+        border: 1px solid rgba(0,230,118,0.25) !important; letter-spacing: 0.01em !important;
       }
-      #__ec-tb .ec-cap:hover { box-shadow: 0 0 18px rgba(16,185,129,0.5) !important; color: #fff !important; }
+      #__ec-tb .ec-cap:hover { background: rgba(0,230,118,0.2) !important; color: #34d399 !important; }
       #__ec-tb .ec-sav {
-        background: rgba(99,102,241,0.18) !important; color: #a5b4fc !important;
-        font-size: 11px !important; font-weight: 600 !important;
-        padding: 5px 11px !important; border-radius: 6px !important;
-        border: 1px solid rgba(99,102,241,0.3) !important; letter-spacing: 0.01em !important;
+        background: rgba(255,255,255,0.06) !important; color: rgba(255,255,255,0.5) !important;
+        font-size: 13px !important; font-weight: 600 !important;
+        padding: 8px 16px !important; border-radius: 8px !important;
+        border: 1px solid rgba(255,255,255,0.1) !important; letter-spacing: 0.01em !important;
       }
-      #__ec-tb .ec-sav:hover { background: rgba(99,102,241,0.28) !important; color: #c7d2fe !important; }
-      #__ec-tb .ec-x { color: rgba(255,255,255,0.25) !important; font-size: 15px !important; }
+      #__ec-tb .ec-sav:hover { background: rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.8) !important; }
+      #__ec-tb .ec-x { color: rgba(255,255,255,0.25) !important; font-size: 16px !important; padding: 8px !important; }
       #__ec-toast {
         position: fixed !important; z-index: 2147483647 !important;
         pointer-events: none !important; bottom: 20px !important; right: 20px !important;
@@ -341,7 +340,7 @@
 
     const moveBtn = document.createElement('button');
     moveBtn.title = 'Move selection';
-    moveBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>';
+    moveBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M15 19l-3 3-3-3"/><path d="M19 9l3 3-3 3"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>';
     moveBtn.dataset.tool = 'move';
     moveBtn.classList.add('ec-act');
     moveBtn.addEventListener('click', e => { e.stopPropagation(); setTool(null); });
@@ -349,14 +348,14 @@
 
     const penBtn = document.createElement('button');
     penBtn.title = 'Pencil';
-    penBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
+    penBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
     penBtn.dataset.tool = 'pen';
     penBtn.addEventListener('click', e => { e.stopPropagation(); setTool(activeTool === 'pen' ? null : 'pen'); });
     toolbar.appendChild(penBtn);
 
     const erBtn = document.createElement('button');
     erBtn.title = 'Eraser';
-    erBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>';
+    erBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>';
     erBtn.dataset.tool = 'eraser';
     erBtn.addEventListener('click', e => { e.stopPropagation(); setTool(activeTool === 'eraser' ? null : 'eraser'); });
     toolbar.appendChild(erBtn);
@@ -367,14 +366,14 @@
     cornerBtn.title = 'Toggle round/sharp corners';
     cornerBtn.dataset.action = 'corners';
     cornerBtn.innerHTML = selCornerRadius > 0
-      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="6"/></svg>'
-      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="0"/></svg>';
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="6"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="0"/></svg>';
     cornerBtn.addEventListener('click', e => {
       e.stopPropagation();
       selCornerRadius = selCornerRadius > 0 ? 0 : 10;
       cornerBtn.innerHTML = selCornerRadius > 0
-        ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="6"/></svg>'
-        : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="0"/></svg>';
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="6"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="0"/></svg>';
       cornerBtn.classList.toggle('ec-act', selCornerRadius === 0);
       if (selRect) { posSelBox(selRect); showOverlay(selRect); }
     });
