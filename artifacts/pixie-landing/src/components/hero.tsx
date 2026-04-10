@@ -55,7 +55,7 @@ export function Hero() {
             color: "rgba(255,255,255,0.45)",
             lineHeight: 1.65,
             marginBottom: "48px",
-            maxWidth: "520px",
+            whiteSpace: "nowrap",
           }}
         >
           Pixie makes screen capturing effortless. Hover over any element, click once, and capture it perfectly without dragging or cropping.
