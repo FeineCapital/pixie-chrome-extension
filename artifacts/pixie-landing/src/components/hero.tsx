@@ -11,7 +11,7 @@ function AppleIcon({ className }: { className?: string }) {
 
 export function Hero() {
   return (
-    <section className="w-full min-h-[90vh] flex flex-col items-center justify-center px-6 md:px-8 pt-36 md:pt-40 pb-20 relative overflow-hidden">
+    <section className="w-full min-h-screen flex flex-col items-center justify-center px-6 md:px-8 pt-24 pb-16 relative overflow-hidden">
       <div className="max-w-5xl mx-auto text-center flex flex-col items-center relative z-10">
         <motion.h1 
           initial={{ y: 20, opacity: 0 }}
