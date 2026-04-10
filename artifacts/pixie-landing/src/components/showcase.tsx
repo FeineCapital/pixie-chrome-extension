@@ -321,19 +321,39 @@ function SlackChat({ showPasted, showSent }: { showPasted: boolean; showSent: bo
 function CaptureDemo() {
   const [step, setStep] = useState(0);
 
-  // 0 = idle on Stripe tab
-  // 1 = cursor moves to MRR card, hover highlights it
-  // 2 = click to capture, overlay darkens
-  // 3 = "Copied to clipboard" notification
-  // 4 = cursor moves to Slack tab and clicks it
-  // 5 = Slack is open, cursor moves to input, paste appears
-  // 6 = cursor clicks send, message sent
+  // 0  = idle on Stripe, cursor in center
+  // 1  = cursor moves toward MRR card
+  // 2  = cursor arrives on MRR card, hover border appears, "Click to capture" tooltip
+  // 3  = click — capture flash / dark overlay
+  // 4  = "Copied to clipboard" notification, cursor still on card
+  // 5  = cursor moves up toward the Slack tab
+  // 6  = cursor arrives on Slack tab (hovering it)
+  // 7  = click Slack tab — tab switches, Slack view loads
+  // 8  = cursor moves down to the message input box
+  // 9  = cursor arrives at input — paste appears (screenshot thumbnail + text)
+  // 10 = cursor moves to the Send button
+  // 11 = click Send — message appears in chat thread
+  // 12 = pause on sent message before looping
   useEffect(() => {
-    const timings = [1800, 1200, 700, 1100, 800, 1200, 2200];
+    const timings = [
+      2200,  // 0: idle, look at stripe
+      1200,  // 1: moving toward MRR
+      1800,  // 2: hovering MRR, tooltip visible
+      600,   // 3: click capture flash
+      2000,  // 4: "Copied to clipboard" visible
+      1000,  // 5: moving toward Slack tab
+      800,   // 6: hovering Slack tab
+      1200,  // 7: Slack tab clicked, view switches
+      1200,  // 8: moving to message input
+      1800,  // 9: paste appears in input
+      800,   // 10: moving to Send button
+      600,   // 11: click Send
+      3000,  // 12: pause on sent message
+    ];
     let t: ReturnType<typeof setTimeout>;
     function advance(s: number) {
       t = setTimeout(() => {
-        const next = (s + 1) % 7;
+        const next = (s + 1) % 13;
         setStep(next);
         advance(next);
       }, timings[s]);
@@ -342,24 +362,30 @@ function CaptureDemo() {
     return () => clearTimeout(t);
   }, []);
 
-  const isHovered = step >= 1 && step <= 3;
-  const isCaptured = step >= 2 && step <= 3;
-  const showCopied = step === 3;
-  const showSlack = step >= 5;
-  const showPasted = step >= 5;
-  const showSent = step >= 6;
-  const activeTab = step >= 4 ? "slack" : "stripe";
+  const isHovered = step >= 2 && step <= 4;
+  const isCaptured = step >= 3 && step <= 4;
+  const showCopied = step === 4;
+  const showSlack = step >= 7;
+  const showPasted = step >= 9;
+  const showSent = step >= 11;
+  const activeTab = step >= 7 ? "slack" : "stripe";
 
   const cursorPositions: Record<number, { left: string; top: string }> = {
-    0: { left: "50%", top: "20%" },
-    1: { left: "14%", top: "38%" },
-    2: { left: "14%", top: "38%" },
-    3: { left: "14%", top: "38%" },
-    4: { left: "38%", top: "2%" },
-    5: { left: "70%", top: "88%" },
-    6: { left: "92%", top: "88%" },
+    0:  { left: "50%", top: "28%" },
+    1:  { left: "28%", top: "34%" },
+    2:  { left: "14%", top: "38%" },
+    3:  { left: "14%", top: "38%" },
+    4:  { left: "14%", top: "38%" },
+    5:  { left: "26%", top: "14%" },
+    6:  { left: "38%", top: "2%" },
+    7:  { left: "38%", top: "2%" },
+    8:  { left: "55%", top: "60%" },
+    9:  { left: "65%", top: "88%" },
+    10: { left: "88%", top: "88%" },
+    11: { left: "92%", top: "88%" },
+    12: { left: "70%", top: "60%" },
   };
-  const pos = cursorPositions[step] || { left: "50%", top: "20%" };
+  const pos = cursorPositions[step] || { left: "50%", top: "28%" };
 
   return (
     <div className="relative w-full max-w-4xl mx-auto select-none">
