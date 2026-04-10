@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useCallback } from "react";
 import chromeLogo from "@assets/image_1775809932785.png";
-import pixieLogo from "@assets/image_1775817701275.png";
 
 function AppleIcon({ size = 16 }: { size?: number }) {
   return (
@@ -55,7 +54,7 @@ function HeroCursorOverlay({ sectionEl }: { sectionEl: HTMLElement | null }) {
   }, [sectionEl, doMeasure]);
 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 1200);
+    const t = setTimeout(() => setVisible(true), 2400);
     return () => clearTimeout(t);
   }, []);
 
@@ -84,8 +83,6 @@ function HeroCursorOverlay({ sectionEl }: { sectionEl: HTMLElement | null }) {
   const cursorY = activeBox
     ? activeBox.y + activeBox.h / 2 - 8
     : boxes[0] ? boxes[0].y - 8 : 0;
-
-  const showLabel = step >= 1 && step <= 4 && !fading;
 
   return (
     <>
@@ -177,8 +174,8 @@ function HeroCursorOverlay({ sectionEl }: { sectionEl: HTMLElement | null }) {
             key={`outline-${step}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 1.2, ease: "easeInOut" } }}
-            transition={{ duration: 0.18 }}
+            exit={{ opacity: 0, transition: { duration: 0.08 } }}
+            transition={{ duration: 0.15 }}
             style={{
               position: "absolute",
               left: activeBox.x - pad,
@@ -209,8 +206,8 @@ function HeroCursorOverlay({ sectionEl }: { sectionEl: HTMLElement | null }) {
             }}
             exit={{ opacity: 0, y: -18, transition: { duration: 1.4, ease: [0.4, 0, 0.2, 1] } }}
             transition={{
-              left: { duration: 0.82, ease: [0.22, 1, 0.36, 1] },
-              top: { duration: 0.82, ease: [0.22, 1, 0.36, 1] },
+              left: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+              top: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
               opacity: fading
                 ? { duration: 1.4, ease: [0.4, 0, 0.2, 1] }
                 : { duration: 0.3 },
@@ -226,44 +223,6 @@ function HeroCursorOverlay({ sectionEl }: { sectionEl: HTMLElement | null }) {
               <path d="M4 2L4 17L7.5 13.5L10 19L12 18L9.5 12.5L14 12.5L4 2Z" fill="white" stroke="#444" strokeWidth="0.8" strokeLinejoin="round"/>
             </svg>
 
-            {/* "Click to capture" label — top-right of cursor tip */}
-            <AnimatePresence>
-              {showLabel && (
-                <motion.div
-                  key={`label-${step}`}
-                  initial={{ opacity: 0, scale: 0.9, x: -4 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
-                  transition={{ duration: 0.2, delay: 0.15 }}
-                  style={{
-                    position: "absolute",
-                    left: "20px",
-                    top: "-24px",
-                    background: "#171717",
-                    borderRadius: "6px",
-                    padding: "4px 9px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    whiteSpace: "nowrap",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
-                  }}
-                >
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M5 13l4 4L19 7"/>
-                  </svg>
-                  <span style={{
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    color: "#ffffff",
-                    fontFamily: "Arial, sans-serif",
-                    letterSpacing: "0.01em",
-                  }}>
-                    Click to capture
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
@@ -305,19 +264,6 @@ export function Hero() {
           position: "relative",
         }}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          style={{ marginBottom: "32px" }}
-        >
-          <img
-            src={pixieLogo}
-            alt="Pixie"
-            style={{ width: "64px", height: "64px", borderRadius: "16px" }}
-          />
-        </motion.div>
-
         <HeroCursorOverlay sectionEl={sectionEl} />
       </div>
     </section>
