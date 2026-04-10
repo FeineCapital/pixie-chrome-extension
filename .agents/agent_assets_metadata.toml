@@ -18,3 +18,9 @@ id = "PJFSbKGk6fuVSNa35o3Dy"
 uri = "file://Pixie Draft.zip"
 type = "unspecified"
 title = "Pixie Draft"
+
+[[outputs]]
+id = "YhnLOboVvgy_Xkt915BNk"
+uri = "file://pixie-chrome-extension.zip"
+type = "unspecified"
+title = "Pixie Chrome Extension (ZIP for Web Store)"
