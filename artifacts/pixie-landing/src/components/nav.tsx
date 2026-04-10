@@ -17,7 +17,7 @@ export function Nav() {
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center" style={{ padding: "12px 16px 0" }}>
       <div
         className="relative flex items-center justify-between"
-        style={{ maxWidth: "780px", width: "100%" }}
+        style={{ maxWidth: "780px", width: "100%", paddingTop: "10px", paddingBottom: "10px" }}
       >
         <div
           className="relative z-10 flex items-center"
@@ -54,7 +54,7 @@ export function Nav() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
               transition={{ duration: 0.25 }}
-              className="flex items-center gap-6 relative z-10"
+              className="flex items-center gap-6 relative z-10 py-1"
             >
               <div className="hidden md:flex items-center gap-6 text-[15px] font-medium text-muted-foreground">
                 <a href="#features" className="hover:text-foreground transition-colors whitespace-nowrap">
