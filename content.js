@@ -28,7 +28,6 @@
   let activeColor   = '#000000';
   let isDrawing     = false;
   let drawOrigin    = null;
-  let savedPixels   = null;
   let captureRadius = 0;
   let selCornerRadius = 10;
   let isMovingSel   = false;
@@ -355,7 +354,7 @@
       annCanvas.width  = pw;
       annCanvas.height = ph;
       annCtx.scale(dpr, dpr);
-      savedPixels = null;
+      redrawAllStrokes();
     }
     annCtx.lineCap  = 'round';
     annCtx.lineJoin = 'round';
@@ -509,7 +508,7 @@
 
   function clearSel() {
     state = captureMode === 'drag' ? S.DRAG_READY : S.HOVER;
-    selRect = null; savedPixels = null;
+    selRect = null; strokes = []; currentStroke = null;
     isMovingSel = false; moveStart = null;
     activeTool = null;
     if (selBox)    selBox.style.display = 'none';
@@ -522,7 +521,8 @@
   function clearAnnotations() {
     if (!annCtx || !annCanvas) return;
     annCtx.clearRect(0, 0, annCanvas.width, annCanvas.height);
-    savedPixels = null;
+    strokes = [];
+    currentStroke = null;
   }
 
   /* ══════════════════════════════════
@@ -612,14 +612,64 @@
   }
 
   /* ══════════════════════════════════
-     ANNOTATION DRAWING
+     ANNOTATION DRAWING (stroke-based)
   ══════════════════════════════════ */
-  function savePx()    { if (annCtx) savedPixels = annCtx.getImageData(0,0,annCanvas.width,annCanvas.height); }
-  function restorePx() { if (annCtx && savedPixels) annCtx.putImageData(savedPixels,0,0); }
+  let strokes = [];
+  let currentStroke = null;
 
   function canPos(e) {
     const r = annCanvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  function drawStroke(ctx, s) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = s.width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const pts = s.points;
+    if (pts.length < 2) return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      const prev = pts[i - 1];
+      const cur = pts[i];
+      const mx = (prev.x + cur.x) / 2;
+      const my = (prev.y + cur.y) / 2;
+      ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
+    }
+    ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+    ctx.stroke();
+  }
+
+  function redrawAllStrokes() {
+    if (!annCtx || !annCanvas) return;
+    annCtx.clearRect(0, 0, annCanvas.width, annCanvas.height);
+    for (const s of strokes) drawStroke(annCtx, s);
+  }
+
+  function distToSegment(px, py, ax, ay, bx, by) {
+    const dx = bx - ax, dy = by - ay;
+    const len2 = dx * dx + dy * dy;
+    if (len2 === 0) return Math.hypot(px - ax, py - ay);
+    let t = ((px - ax) * dx + (py - ay) * dy) / len2;
+    t = Math.max(0, Math.min(1, t));
+    return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+  }
+
+  function strokeHitTest(stroke, px, py, threshold) {
+    const pts = stroke.points;
+    for (let i = 1; i < pts.length; i++) {
+      if (distToSegment(px, py, pts[i-1].x, pts[i-1].y, pts[i].x, pts[i].y) < threshold) return true;
+    }
+    return false;
+  }
+
+  function eraseAtPoint(px, py) {
+    const before = strokes.length;
+    strokes = strokes.filter(s => !strokeHitTest(s, px, py, 14));
+    if (strokes.length < before) redrawAllStrokes();
   }
 
   let lastMid = null;
@@ -634,10 +684,18 @@
       return;
     }
 
+    const p = canPos(e);
+
+    if (activeTool === 'eraser') {
+      isDrawing = true;
+      eraseAtPoint(p.x, p.y);
+      return;
+    }
+
     isDrawing = true;
-    drawOrigin = canPos(e);
+    drawOrigin = p;
     lastMid = null;
-    savePx();
+    currentStroke = { color: activeColor, width: 2.5, points: [p] };
   }
 
   function onAnnMove(e) {
@@ -660,30 +718,33 @@
     e.preventDefault();
     const p = canPos(e);
 
-    if (activeTool === 'pen') {
+    if (activeTool === 'eraser') {
+      eraseAtPoint(p.x, p.y);
+      return;
+    }
+
+    if (activeTool === 'pen' && currentStroke) {
+      currentStroke.points.push(p);
       annCtx.globalCompositeOperation = 'source-over';
       annCtx.strokeStyle = activeColor;
       annCtx.lineWidth = 2.5;
-    } else {
-      annCtx.globalCompositeOperation = 'destination-out';
-      annCtx.lineWidth = 18;
+      annCtx.lineCap = 'round';
+      annCtx.lineJoin = 'round';
+
+      const mid = { x: (drawOrigin.x + p.x) / 2, y: (drawOrigin.y + p.y) / 2 };
+      annCtx.beginPath();
+      if (lastMid) {
+        annCtx.moveTo(lastMid.x, lastMid.y);
+        annCtx.quadraticCurveTo(drawOrigin.x, drawOrigin.y, mid.x, mid.y);
+      } else {
+        annCtx.moveTo(drawOrigin.x, drawOrigin.y);
+        annCtx.lineTo(mid.x, mid.y);
+      }
+      annCtx.stroke();
+
+      lastMid = mid;
+      drawOrigin = p;
     }
-
-    const mid = { x: (drawOrigin.x + p.x) / 2, y: (drawOrigin.y + p.y) / 2 };
-    annCtx.beginPath();
-    if (lastMid) {
-      annCtx.moveTo(lastMid.x, lastMid.y);
-      annCtx.quadraticCurveTo(drawOrigin.x, drawOrigin.y, mid.x, mid.y);
-    } else {
-      annCtx.moveTo(drawOrigin.x, drawOrigin.y);
-      annCtx.lineTo(mid.x, mid.y);
-    }
-    annCtx.stroke();
-
-    lastMid = mid;
-    drawOrigin = p;
-
-    if (activeTool === 'eraser') annCtx.globalCompositeOperation = 'source-over';
   }
 
   function onAnnUp(e) {
@@ -698,8 +759,11 @@
     e.preventDefault(); e.stopPropagation();
     isDrawing = false;
     lastMid = null;
-    annCtx.globalCompositeOperation = 'source-over';
-    savePx();
+
+    if (currentStroke && currentStroke.points.length > 1) {
+      strokes.push(currentStroke);
+    }
+    currentStroke = null;
     drawOrigin = null;
   }
 
@@ -814,11 +878,8 @@
 
   function onKeyDown(e) {
     if (e.key === 'Escape') {
-      if (state === S.SELECTED) clearSel();
-      else {
-        chrome.runtime.sendMessage({ type: 'DEACTIVATE_GLOBAL' }).catch(() => {});
-        deactivate();
-      }
+      chrome.runtime.sendMessage({ type: 'DEACTIVATE_GLOBAL' }).catch(() => {});
+      deactivate();
       return;
     }
     if (e.key === 'Enter' && state === S.SELECTED) { e.preventDefault(); doSave(); }
