@@ -1,84 +1,74 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center" style={{ padding: "12px 16px 0" }}>
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center" style={{ padding: "20px 24px 0" }}>
       <div
-        className="relative flex items-center justify-between"
-        style={{ maxWidth: "780px", width: "100%", paddingTop: "10px", paddingBottom: "10px", paddingRight: "16px" }}
+        className="glass-nav flex items-center justify-between"
+        style={{
+          maxWidth: "860px",
+          width: "100%",
+          borderRadius: "100px",
+          padding: "14px 28px",
+        }}
       >
-        <div
-          className="relative z-10 flex items-center"
-          style={{ paddingLeft: "28px" }}
+        <Link
+          href="/"
+          style={{
+            fontFamily: "Arial, sans-serif",
+            fontWeight: 700,
+            fontSize: "15px",
+            color: "#ffffff",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            textDecoration: "none",
+          }}
         >
-          <Link
-            href="/"
-            className="font-display font-bold tracking-tight text-foreground flex items-center gap-2.5 text-lg md:text-xl py-2"
-          >
-            <div className="w-4 h-4 rounded-full bg-foreground" />
-            Pixie
-          </Link>
-        </div>
+          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#34D399" }} />
+          Pixie
+        </Link>
 
-        <AnimatePresence>
-          {scrolled && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="absolute inset-0 glass-nav border border-border/50 rounded-full"
-              style={{
-                boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
-              }}
-            />
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {scrolled && (
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              transition={{ duration: 0.25 }}
-              className="flex items-center gap-6 relative z-10 py-1"
-            >
-              <div className="hidden md:flex items-center gap-6 text-[15px] font-medium text-muted-foreground">
-                <a href="#showcase" className="hover:text-foreground transition-colors whitespace-nowrap">
-                  How it works
-                </a>
-                <a href="#features" className="hover:text-foreground transition-colors whitespace-nowrap">
-                  Features
-                </a>
-                <a href="#pricing" className="hover:text-foreground transition-colors whitespace-nowrap">
-                  Pricing
-                </a>
-              </div>
-
-              <Button
-                className="rounded-full font-semibold shrink-0 h-10 px-6 text-sm"
-                asChild
+        <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
+            {["How it works", "Features", "Pricing"].map((label, i) => (
+              <a
+                key={label}
+                href={["#showcase", "#features", "#pricing"][i]}
+                style={{
+                  fontFamily: "Arial, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  color: "rgba(255,255,255,0.5)",
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = "#ffffff")}
+                onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
               >
-                <a href="https://github.com/FeineCapital/pixie-desktop-app/releases/latest/download/Pixie.dmg">
-                  Download for Mac
-                </a>
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {label}
+              </a>
+            ))}
+          </div>
+
+          <a
+            href="https://github.com/FeineCapital/pixie-desktop-app/releases/latest/download/Pixie.dmg"
+            style={{
+              fontFamily: "Arial, sans-serif",
+              fontWeight: 700,
+              fontSize: "13px",
+              color: "#000000",
+              background: "#ffffff",
+              borderRadius: "100px",
+              padding: "8px 20px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Download
+          </a>
+        </div>
       </div>
     </div>
   );
