@@ -10,233 +10,75 @@ function AppleIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-type Box = { x: number; y: number; w: number; h: number };
+type Target = "h1" | "p" | "mac" | "chrome" | null;
 
-// steps: 0=wait, 1=on h1, 2=on p, 3=on mac btn, 4=on chrome btn, 5=fade out
-const STEP_TIMINGS = [800, 1500, 1500, 1300, 1300, 1600];
+const PAD: Record<string, number> = { h1: 5, p: 4, mac: 3, chrome: 3 };
+const RADIUS: Record<string, string> = { h1: "8px", p: "6px", mac: "14px", chrome: "14px" };
 
-// padding around outline per step (px each side)
-const OUTLINE_PAD: Record<number, number> = { 1: 5, 2: 4, 3: 2, 4: 2 };
-const OUTLINE_RADIUS: Record<number, string> = { 1: "8px", 2: "6px", 3: "14px", 4: "14px" };
+function PixieOutline({ target, sectionEl, refs }: {
+  target: Target;
+  sectionEl: HTMLElement | null;
+  refs: Record<string, React.RefObject<HTMLElement | null>>;
+}) {
+  const [box, setBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
 
-function HeroCursorOverlay({ sectionEl }: { sectionEl: HTMLElement | null }) {
-  const h1Ref = useRef<HTMLHeadingElement>(null);
-  const pRef = useRef<HTMLParagraphElement>(null);
-  const macRef = useRef<HTMLAnchorElement>(null);
-  const chromeRef = useRef<HTMLAnchorElement>(null);
-
-  const [step, setStep] = useState(0);
-  const [visible, setVisible] = useState(false);
-  const [boxes, setBoxes] = useState<Box[]>([]);
-
-  const doMeasure = useCallback(() => {
-    if (!sectionEl) return;
+  useEffect(() => {
+    if (!target || !sectionEl) { setBox(null); return; }
+    const el = refs[target]?.current;
+    if (!el) { setBox(null); return; }
     const sr = sectionEl.getBoundingClientRect();
-    const m = (el: HTMLElement | null): Box => {
-      if (!el) return { x: 0, y: 0, w: 0, h: 0 };
-      const r = el.getBoundingClientRect();
-      return { x: r.left - sr.left, y: r.top - sr.top, w: r.width, h: r.height };
-    };
-    setBoxes([
-      m(h1Ref.current),
-      m(pRef.current),
-      m(macRef.current),
-      m(chromeRef.current),
-    ]);
-  }, [sectionEl]);
+    const r = el.getBoundingClientRect();
+    setBox({ x: r.left - sr.left, y: r.top - sr.top, w: r.width, h: r.height });
+  }, [target, sectionEl, refs]);
 
-  useEffect(() => {
-    if (!sectionEl) return;
-    doMeasure();
-    const ro = new ResizeObserver(doMeasure);
-    ro.observe(sectionEl);
-    return () => ro.disconnect();
-  }, [sectionEl, doMeasure]);
-
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 2400);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    if (!visible) return;
-    let t: ReturnType<typeof setTimeout>;
-    function advance(s: number) {
-      t = setTimeout(() => {
-        const next = (s + 1) % STEP_TIMINGS.length;
-        setStep(next);
-        advance(next);
-      }, STEP_TIMINGS[s]);
-    }
-    advance(step);
-    return () => clearTimeout(t);
-  }, [visible]);
-
-  const fading = step === 5;
-  const activeBox = step >= 1 && step <= 4 ? boxes[step - 1] : null;
-  const pad = OUTLINE_PAD[step] ?? 5;
-
-  // cursor sits at the right-center edge of the active element
-  const cursorX = activeBox
-    ? activeBox.x + activeBox.w + 2
-    : boxes[0] ? boxes[0].x + boxes[0].w + 2 : 0;
-  const cursorY = activeBox
-    ? activeBox.y + activeBox.h / 2 - 8
-    : boxes[0] ? boxes[0].y - 8 : 0;
+  const pad = target ? PAD[target] ?? 4 : 4;
+  const radius = target ? RADIUS[target] ?? "8px" : "8px";
 
   return (
-    <>
-      <h1
-        ref={h1Ref}
-        style={{
-          fontFamily: "Arial, sans-serif",
-          fontSize: "44px",
-          fontWeight: 700,
-          color: "#171717",
-          lineHeight: 1,
-          letterSpacing: "-0.03em",
-          marginBottom: "28px",
-          whiteSpace: "nowrap",
-          position: "relative",
-        }}
-      >
-        The easiest way to take screenshots.
-      </h1>
-
-      <p
-        ref={pRef}
-        style={{
-          fontFamily: "Arial, sans-serif",
-          fontSize: "14px",
-          fontWeight: 400,
-          color: "rgba(0,0,0,0.45)",
-          lineHeight: 1.65,
-          marginBottom: "48px",
-          whiteSpace: "nowrap",
-        }}
-      >
-        Pixie makes screen capturing effortless. Hover over any element, click once, and capture it perfectly without dragging or cropping.
-      </p>
-
-      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-        <a
-          ref={macRef}
-          href="https://github.com/FeineCapital/pixie-desktop-app/releases/latest/download/Pixie.dmg"
+    <AnimatePresence>
+      {target && box && (
+        <motion.div
+          key={target}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.08 } }}
+          transition={{ duration: 0.12 }}
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            fontFamily: "Arial, sans-serif",
-            fontWeight: 700,
-            fontSize: "15px",
-            color: "#ffffff",
-            background: "#171717",
-            borderRadius: "12px",
-            padding: "16px 32px",
-            textDecoration: "none",
-            whiteSpace: "nowrap",
+            position: "absolute",
+            left: box.x - pad,
+            top: box.y - pad,
+            width: box.w + pad * 2,
+            height: box.h + pad * 2,
+            border: "2px solid #34D399",
+            borderRadius: radius,
+            background: "rgba(52,211,153,0.04)",
+            pointerEvents: "none",
+            zIndex: 20,
           }}
-        >
-          <AppleIcon size={16} />
-          Download for Mac
-        </a>
-
-        <a
-          ref={chromeRef}
-          href="https://github.com/FeineCapital/pixie-chrome-extension"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            fontFamily: "Arial, sans-serif",
-            fontWeight: 700,
-            fontSize: "15px",
-            color: "#171717",
-            background: "transparent",
-            border: "1px solid rgba(0,0,0,0.12)",
-            borderRadius: "12px",
-            padding: "16px 32px",
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <img src={chromeLogo} alt="Chrome" style={{ width: "16px", height: "16px" }} />
-          Chrome Extension
-        </a>
-      </div>
-
-      {/* Green outline — tight around the active element */}
-      <AnimatePresence>
-        {visible && activeBox && !fading && (
-          <motion.div
-            key={`outline-${step}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.08 } }}
-            transition={{ duration: 0.15 }}
-            style={{
-              position: "absolute",
-              left: activeBox.x - pad,
-              top: activeBox.y - pad,
-              width: activeBox.w + pad * 2,
-              height: activeBox.h + pad * 2,
-              border: "2px solid #34D399",
-              borderRadius: OUTLINE_RADIUS[step] ?? "8px",
-              background: "rgba(52,211,153,0.04)",
-              pointerEvents: "none",
-              zIndex: 20,
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Cursor + label */}
-      <AnimatePresence>
-        {visible && (
-          <motion.div
-            key="cursor"
-            initial={{ opacity: 0 }}
-            animate={{
-              left: cursorX,
-              top: cursorY,
-              opacity: fading ? 0 : 1,
-              y: fading ? -18 : 0,
-            }}
-            exit={{ opacity: 0, y: -18, transition: { duration: 1.4, ease: [0.4, 0, 0.2, 1] } }}
-            transition={{
-              left: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
-              top: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
-              opacity: fading
-                ? { duration: 1.4, ease: [0.4, 0, 0.2, 1] }
-                : { duration: 0.3 },
-              y: fading ? { duration: 1.4, ease: [0.4, 0, 0.2, 1] } : { duration: 0.3 },
-            }}
-            style={{
-              position: "absolute",
-              pointerEvents: "none",
-              zIndex: 30,
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 22 22" fill="none" style={{ display: "block" }}>
-              <path d="M4 2L4 17L7.5 13.5L10 19L12 18L9.5 12.5L14 12.5L4 2Z" fill="white" stroke="#444" strokeWidth="0.8" strokeLinejoin="round"/>
-            </svg>
-
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        />
+      )}
+    </AnimatePresence>
   );
 }
 
 export function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [sectionEl, setSectionEl] = useState<HTMLElement | null>(null);
+  const [hovered, setHovered] = useState<Target>(null);
+
+  const h1Ref = useRef<HTMLHeadingElement>(null);
+  const pRef = useRef<HTMLParagraphElement>(null);
+  const macRef = useRef<HTMLAnchorElement>(null);
+  const chromeRef = useRef<HTMLAnchorElement>(null);
+
+  const refs = { h1: h1Ref, p: pRef, mac: macRef, chrome: chromeRef } as Record<string, React.RefObject<HTMLElement | null>>;
 
   useEffect(() => {
     setSectionEl(sectionRef.current);
   }, []);
+
+  const enter = useCallback((t: Target) => () => setHovered(t), []);
+  const leave = useCallback(() => setHovered(null), []);
 
   return (
     <section
@@ -264,7 +106,98 @@ export function Hero() {
           position: "relative",
         }}
       >
-        <HeroCursorOverlay sectionEl={sectionEl} />
+        <PixieOutline target={hovered} sectionEl={sectionEl} refs={refs} />
+
+        <h1
+          ref={h1Ref}
+          onMouseEnter={enter("h1")}
+          onMouseLeave={leave}
+          style={{
+            fontFamily: "Arial, sans-serif",
+            fontSize: "44px",
+            fontWeight: 700,
+            color: "#171717",
+            lineHeight: 1,
+            letterSpacing: "-0.03em",
+            marginBottom: "28px",
+            whiteSpace: "nowrap",
+            position: "relative",
+            cursor: "default",
+          }}
+        >
+          The easiest way to take screenshots.
+        </h1>
+
+        <p
+          ref={pRef}
+          onMouseEnter={enter("p")}
+          onMouseLeave={leave}
+          style={{
+            fontFamily: "Arial, sans-serif",
+            fontSize: "14px",
+            fontWeight: 400,
+            color: "rgba(0,0,0,0.45)",
+            lineHeight: 1.65,
+            marginBottom: "48px",
+            whiteSpace: "nowrap",
+            cursor: "default",
+          }}
+        >
+          Pixie makes screen capturing effortless. Hover over any element, click once, and capture it perfectly without dragging or cropping.
+        </p>
+
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <a
+            ref={macRef}
+            onMouseEnter={enter("mac")}
+            onMouseLeave={leave}
+            href="https://github.com/FeineCapital/pixie-desktop-app/releases/latest/download/Pixie.dmg"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              fontFamily: "Arial, sans-serif",
+              fontWeight: 700,
+              fontSize: "15px",
+              color: "#ffffff",
+              background: "#171717",
+              borderRadius: "12px",
+              padding: "16px 32px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <AppleIcon size={16} />
+            Download for Mac
+          </a>
+
+          <a
+            ref={chromeRef}
+            onMouseEnter={enter("chrome")}
+            onMouseLeave={leave}
+            href="https://github.com/FeineCapital/pixie-chrome-extension"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              fontFamily: "Arial, sans-serif",
+              fontWeight: 700,
+              fontSize: "15px",
+              color: "#171717",
+              background: "transparent",
+              border: "1px solid rgba(0,0,0,0.12)",
+              borderRadius: "12px",
+              padding: "16px 32px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <img src={chromeLogo} alt="Chrome" style={{ width: "16px", height: "16px" }} />
+            Chrome Extension
+          </a>
+        </div>
       </div>
     </section>
   );
