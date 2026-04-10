@@ -45,6 +45,15 @@ function findTarget(x: number, y: number): Element | null {
     const card = found.closest('[data-pixie-card]');
     if (card) return card;
   }
+
+  // In restricted zones, only allow explicitly marked elements
+  const restrictedZone = found.closest('[data-pixie-zone="restricted"]');
+  if (restrictedZone) {
+    const allowed = found.closest('[data-pixie-allow]') as Element | null;
+    if (!allowed) return null;
+    return allowed;
+  }
+
   return found;
 }
 

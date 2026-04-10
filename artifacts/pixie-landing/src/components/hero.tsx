@@ -11,6 +11,7 @@ function AppleIcon({ size = 16 }: { size?: number }) {
 export function Hero() {
   return (
     <section
+      data-pixie-zone="restricted"
       style={{
         width: "100%",
         minHeight: "100vh",
@@ -33,6 +34,7 @@ export function Hero() {
         }}
       >
         <h1
+          data-pixie-allow="true"
           style={{
             fontFamily: "Arial, sans-serif",
             fontSize: "44px",
@@ -48,6 +50,7 @@ export function Hero() {
         </h1>
 
         <p
+          data-pixie-allow="true"
           style={{
             fontFamily: "Arial, sans-serif",
             fontSize: "14px",
@@ -63,6 +66,7 @@ export function Hero() {
 
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <a
+            data-pixie-allow="true"
             href="https://github.com/FeineCapital/pixie-desktop-app/releases/latest/download/Pixie.dmg"
             style={{
               display: "inline-flex",
@@ -84,6 +88,7 @@ export function Hero() {
           </a>
 
           <a
+            data-pixie-allow="true"
             href="https://github.com/FeineCapital/pixie-chrome-extension"
             target="_blank"
             rel="noopener noreferrer"
