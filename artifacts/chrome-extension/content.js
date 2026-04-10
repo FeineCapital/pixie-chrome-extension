@@ -148,7 +148,11 @@
 
   function posSelBox(r) {
     ensureSelBox();
-    selBox.style.cssText += `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;display:block;`;
+    selBox.style.left    = r.left   + 'px';
+    selBox.style.top     = r.top    + 'px';
+    selBox.style.width   = r.width  + 'px';
+    selBox.style.height  = r.height + 'px';
+    selBox.style.display = 'block';
   }
 
   /* ══════════════════════════════════
@@ -605,19 +609,26 @@
       chrome.runtime.sendMessage({ type: 'TAKE_SCREENSHOT' }).catch(reject);
     });
 
+    let success = false;
     try {
       await mergeAndCopy(base64);
       toast('Copied to clipboard ✓');
+      success = true;
     } catch (err) {
       toast('Failed: ' + err.message, true);
+      // Restore UI on failure so user can try again
+      if (fromToolbar && selRect) {
+        posSelBox(selRect);
+        posHandles(selRect);
+        if (toolbar)   toolbar.style.display = 'flex';
+        if (annCanvas) annCanvas.style.visibility = 'visible';
+      }
     }
 
-    // Restore toolbar UI only if capture was triggered from the toolbar
-    if (fromToolbar && selRect) {
-      posSelBox(selRect);
-      posHandles(selRect);
-      if (toolbar)   toolbar.style.display = 'flex';
-      if (annCanvas) annCanvas.style.visibility = 'visible';
+    // Deactivate globally after a successful capture
+    if (success) {
+      chrome.runtime.sendMessage({ type: 'DEACTIVATE_GLOBAL' }).catch(() => {});
+      deactivate();
     }
   }
 
