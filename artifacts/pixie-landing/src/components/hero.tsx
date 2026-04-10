@@ -5,16 +5,6 @@ export function Hero() {
   return (
     <section className="w-full min-h-[90vh] flex flex-col items-center justify-center px-6 md:px-8 pt-36 md:pt-40 pb-20 relative overflow-hidden">
       <div className="max-w-5xl mx-auto text-center flex flex-col items-center relative z-10">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-6 md:mb-8 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs md:text-sm font-medium border border-border"
-        >
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          Pixie v1.0 is now live
-        </motion.div>
-        
         <motion.h1 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
