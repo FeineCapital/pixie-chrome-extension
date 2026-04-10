@@ -1,0 +1,46 @@
+name: Build Pixie for Mac
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build .dmg
+        run: npm run dist
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pixie-Mac
+          path: dist/*.dmg
+          retention-days: 30
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.dmg
+          name: Pixie ${{ github.ref_name }}
+          body: |
+            ## Install Pixie ${{ github.ref_name }}
+
+            1. Download **Pixie-${{ github.ref_name }}.dmg** below
+            2. Open it and drag Pixie into your Applications folder
+            3. Launch Pixie — press ⌘⇧6 to capture any area, ⌘⇧7 for full screen
